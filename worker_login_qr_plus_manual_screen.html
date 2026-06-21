@@ -1,0 +1,27 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.phone{max-width:300px;margin:0 auto;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-xl);overflow:hidden}
+.stat{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 4px;font-size:12px;color:var(--color-text-tertiary)}
+.corner{position:absolute;width:22px;height:22px}
+</style>
+<h2 class="sr-only">作業者ログイン画面のモック。QRスキャンに加えて社員番号の手入力でもログインできる。</h2>
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem">
+  <div class="phone">
+    <div class="stat"><span>9:41</span><span><i class="ti ti-wifi-off" aria-hidden="true"></i>&nbsp;&nbsp;<i class="ti ti-battery-3" aria-hidden="true"></i></span></div>
+    <div style="padding:8px 20px 24px;text-align:center">
+      <p style="font-size:13px;color:var(--color-text-secondary);margin:4px 0 18px">プレス日報</p>
+      <h3 style="font-size:18px;font-weight:500;margin:0 0 6px;color:var(--color-text-primary)">社員証をスキャン</h3>
+      <p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 16px">QRコードを枠内にかざしてください</p>
+      <div style="position:relative;width:160px;height:160px;margin:0 auto;background:var(--color-background-tertiary);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center">
+        <i class="ti ti-qrcode" style="font-size:54px;color:var(--color-text-tertiary)" aria-hidden="true"></i>
+        <span class="corner" style="top:10px;left:10px;border-top:2px solid var(--color-text-info);border-left:2px solid var(--color-text-info)"></span>
+        <span class="corner" style="top:10px;right:10px;border-top:2px solid var(--color-text-info);border-right:2px solid var(--color-text-info)"></span>
+        <span class="corner" style="bottom:10px;left:10px;border-bottom:2px solid var(--color-text-info);border-left:2px solid var(--color-text-info)"></span>
+        <span class="corner" style="bottom:10px;right:10px;border-bottom:2px solid var(--color-text-info);border-right:2px solid var(--color-text-info)"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin:18px 2px 14px"><span style="flex:1;height:0.5px;background:var(--color-border-tertiary)"></span><span style="font-size:12px;color:var(--color-text-tertiary)">または</span><span style="flex:1;height:0.5px;background:var(--color-border-tertiary)"></span></div>
+      <div style="padding:11px;text-align:center;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);font-size:14px;color:var(--color-text-primary)"><i class="ti ti-keyboard" aria-hidden="true"></i> 社員番号を手入力</div>
+      <div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);margin-top:16px"><i class="ti ti-cloud-off" aria-hidden="true"></i> オフラインでもログインできます</div>
+    </div>
+  </div>
+</div>

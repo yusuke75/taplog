@@ -1,0 +1,107 @@
+/* ============================================================
+   TapLog — Design Tokens (Material Design 3 inspired)
+   Defines the CSS variables consumed across the app. The
+   variable names mirror those used in the original mockups so
+   the mockup markup carries over unchanged.
+   ============================================================ */
+
+:root {
+  /* --- Brand / primary palette (M3 "primary" role) --- */
+  --md-primary: #3955d6;
+  --md-primary-hover: #2f49ba;
+  --md-primary-container: #e1e6ff;
+  --md-on-primary: #ffffff;
+
+  /* --- Neutral surfaces --- */
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f4f5fb;
+  --color-background-tertiary: #e8eaf3;
+
+  /* --- Text roles --- */
+  --color-text-primary: #1a1c23;
+  --color-text-secondary: #5a5f6e;
+  --color-text-tertiary: #8b90a0;
+
+  /* --- Semantic: info / success / warning / danger --- */
+  --color-text-info: #3955d6;
+  --color-background-info: #e1e6ff;
+  --color-border-info: #3955d6;
+
+  --color-text-success: #1b7f4b;
+  --color-background-success: #d8f3e3;
+
+  --color-text-warning: #9a6700;
+  --color-background-warning: #fdf0d2;
+
+  --color-text-danger: #b3261e;
+  --color-background-danger: #fbe1df;
+
+  /* --- Borders --- */
+  --color-border-primary: #c9cdda;
+  --color-border-secondary: #d8dbe6;
+  --color-border-tertiary: #e6e8f0;
+
+  /* --- Radius scale --- */
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 14px;
+  --border-radius-xl: 24px;
+  --border-radius-pill: 999px;
+
+  /* --- Elevation (M3 surface tints / shadows) --- */
+  --shadow-1: 0 1px 2px rgba(20, 22, 35, 0.06), 0 1px 3px rgba(20, 22, 35, 0.08);
+  --shadow-2: 0 2px 6px rgba(20, 22, 35, 0.08), 0 4px 12px rgba(20, 22, 35, 0.06);
+  --shadow-3: 0 8px 24px rgba(20, 22, 35, 0.12);
+
+  /* --- Typography --- */
+  --font-sans: "Inter", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+    "Yu Gothic", "Meiryo", system-ui, -apple-system, sans-serif;
+  --font-mono: "Roboto Mono", "SF Mono", "Consolas", monospace;
+
+  /* --- Worker (smartphone) larger base sizing --- */
+  --worker-font-base: 17px;
+  --worker-touch-min: 56px;
+
+  /* --- Layout --- */
+  --header-height: 60px;
+  --admin-sidebar-width: 232px;
+}
+
+/* ============================================================
+   Dark theme — opt-in via [data-theme="dark"] on <html>.
+   ============================================================ */
+:root[data-theme="dark"] {
+  --md-primary: #aebbff;
+  --md-primary-hover: #c4cdff;
+  --md-primary-container: #2a3580;
+  --md-on-primary: #1a1c23;
+
+  --color-background-primary: #15171e;
+  --color-background-secondary: #1d2029;
+  --color-background-tertiary: #272b37;
+
+  --color-text-primary: #eceef5;
+  --color-text-secondary: #aab0c0;
+  --color-text-tertiary: #7d8294;
+
+  --color-text-info: #aebbff;
+  --color-background-info: #2a3580;
+  --color-border-info: #6f81e8;
+
+  --color-text-success: #74dca1;
+  --color-background-success: #143a26;
+
+  --color-text-warning: #f0c668;
+  --color-background-warning: #3d3013;
+
+  --color-text-danger: #f2b8b5;
+  --color-background-danger: #4a1d1a;
+
+  --color-border-primary: #3a3f4d;
+  --color-border-secondary: #2f3340;
+  --color-border-tertiary: #272b37;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.55);
+}

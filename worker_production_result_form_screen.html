@@ -1,0 +1,43 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.phone{max-width:300px;margin:0 auto;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-xl);overflow:hidden}
+.stat{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 4px;font-size:12px;color:var(--color-text-tertiary)}
+.lab{display:block;font-size:12px;color:var(--color-text-secondary);margin:0 0 4px}
+.drow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+</style>
+<h2 class="sr-only">生産実績入力画面のモック。生産数・ロット・総ショット数・ロスと、マスタ連動の不良モード別個数を入力する。</h2>
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem">
+  <div class="phone">
+    <div class="stat"><span>9:41</span><span><i class="ti ti-wifi-off" aria-hidden="true"></i>&nbsp;&nbsp;<i class="ti ti-battery-3" aria-hidden="true"></i></span></div>
+    <div style="padding:6px 16px 16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <i class="ti ti-arrow-left" style="font-size:20px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+        <span style="font-size:16px;font-weight:500;color:var(--color-text-primary)">生産実績 ・ 1号機</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><label class="lab">生産数（個）</label><input type="number" value="1980" style="width:100%"></div>
+        <div><label class="lab">ロット数（個）</label><input type="number" value="2000" style="width:100%"></div>
+        <div><label class="lab">総ショット数</label><input type="number" value="2015" style="width:100%"></div>
+        <div><label class="lab">ロス（個）</label><input type="number" value="12" style="width:100%"></div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin:4px 0 14px">
+        <span style="font-size:13px;color:var(--color-text-secondary)">不良数（自動合計）</span>
+        <span style="font-size:18px;font-weight:500;color:var(--color-text-primary)">3 個</span>
+      </div>
+
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">工程内不良（個数）</div>
+      <div class="drow"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">巻き不良</span><input type="number" value="0" style="width:62px;text-align:center"><span style="font-size:13px;color:var(--color-text-secondary)">個</span></div>
+      <div class="drow"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">寸法不良</span><input type="number" value="2" style="width:62px;text-align:center"><span style="font-size:13px;color:var(--color-text-secondary)">個</span></div>
+      <div class="drow"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">外観不良</span><input type="number" value="1" style="width:62px;text-align:center"><span style="font-size:13px;color:var(--color-text-secondary)">個</span></div>
+      <div class="drow"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">その他</span><input type="number" value="0" style="width:62px;text-align:center"><span style="font-size:13px;color:var(--color-text-secondary)">個</span></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-tertiary);margin:2px 0 14px"><i class="ti ti-settings" aria-hidden="true"></i> 不良モードはマスタ管理で追加・編集できます</div>
+
+      <label class="lab">コメント</label>
+      <textarea rows="2" style="width:100%;resize:none" placeholder="気づいた点があれば記入"></textarea>
+
+      <div style="margin-top:14px;padding:13px;text-align:center;background:var(--color-background-info);color:var(--color-text-info);border-radius:var(--border-radius-lg);font-size:15px;font-weight:500"><i class="ti ti-check" aria-hidden="true"></i> 保存する</div>
+    </div>
+  </div>
+</div>

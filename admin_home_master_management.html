@@ -1,0 +1,29 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.met{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px}
+.tile{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;display:flex;flex-direction:column;gap:8px}
+</style>
+<h2 class="sr-only">管理者ホーム画面のモック。稼働サマリーと、品番・号機・ユーザー・不良モードのマスタ管理タイル。</h2>
+<div style="padding:0.5rem 0">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <span style="font-size:18px;font-weight:500;color:var(--color-text-primary)">管理者ホーム</span>
+    <span style="font-size:13px;color:var(--color-text-secondary)">2026/06/21</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
+    <div class="met"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:4px">本日の稼働率</div><div style="font-size:24px;font-weight:500;color:var(--color-text-primary)">82%</div></div>
+    <div class="met"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:4px">平均段取り</div><div style="font-size:24px;font-weight:500;color:var(--color-text-primary)">18分</div></div>
+    <div class="met"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:4px">本日の不良率</div><div style="font-size:24px;font-weight:500;color:var(--color-text-primary)">0.3%</div></div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <span style="font-size:16px;font-weight:500;color:var(--color-text-primary)">マスタ管理</span>
+    <span style="font-size:13px;color:var(--color-text-info);display:inline-flex;align-items:center;gap:4px">集計・分析を開く <i class="ti ti-arrow-right" aria-hidden="true"></i></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+    <div class="tile"><i class="ti ti-package" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">品番マスタ</div><div style="font-size:13px;color:var(--color-text-secondary)">128 件</div></div>
+    <div class="tile"><i class="ti ti-settings-2" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">号機マスタ</div><div style="font-size:13px;color:var(--color-text-secondary)">9 台</div></div>
+    <div class="tile"><i class="ti ti-users" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">ユーザー</div><div style="font-size:13px;color:var(--color-text-secondary)">24 名</div></div>
+    <div class="tile" style="border:2px solid var(--color-border-info)"><i class="ti ti-alert-triangle" style="font-size:22px;color:var(--color-text-info)" aria-hidden="true"></i><div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">不良モード</div><div style="font-size:13px;color:var(--color-text-secondary)">4 種</div></div>
+  </div>
+</div>

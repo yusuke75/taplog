@@ -1,0 +1,46 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.phone{max-width:300px;margin:0 auto;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-xl);overflow:hidden}
+.stat{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 4px;font-size:12px;color:var(--color-text-tertiary)}
+.evt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+.met{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 4px;text-align:center}
+</style>
+<h2 class="sr-only">記録画面のモック。実行中イベントの停止、各作業の開始ボタン、自動集計、生産実績入力ボタンを表示。</h2>
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem">
+  <div class="phone">
+    <div class="stat"><span>9:41</span><span><i class="ti ti-wifi-off" aria-hidden="true"></i>&nbsp;&nbsp;<i class="ti ti-battery-3" aria-hidden="true"></i></span></div>
+    <div style="padding:6px 16px 16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <i class="ti ti-arrow-left" style="font-size:20px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+        <span style="font-size:16px;font-weight:500;color:var(--color-text-primary)">1号機 ・ A-2203</span>
+      </div>
+
+      <div style="border:2px solid var(--color-border-info);border-radius:var(--border-radius-lg);padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">生産中QA</div>
+          <div style="font-size:12px;color:var(--color-text-info)">実行中</div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:20px;color:var(--color-text-primary)">00:42</div>
+        <div style="background:var(--color-text-primary);color:var(--color-background-primary);padding:8px 16px;border-radius:var(--border-radius-md);font-size:14px;font-weight:500">終了</div>
+      </div>
+
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">作業を記録</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="evt"><i class="ti ti-tool" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-primary)">内段取り</span></div>
+        <div class="evt"><i class="ti ti-replace" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-primary)">材料替え</span></div>
+        <div class="evt"><i class="ti ti-arrow-bar-right" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-primary)">材料通し</span></div>
+        <div class="evt"><i class="ti ti-checkup-list" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-primary)">検査(OP)</span></div>
+        <div class="evt"><i class="ti ti-alert-triangle" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-primary)">トラブル</span></div>
+        <div class="evt"><i class="ti ti-coffee" style="font-size:22px;color:var(--color-text-secondary)" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-primary)">休憩</span></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0">
+        <div class="met"><div style="font-size:11px;color:var(--color-text-secondary)">段取り計</div><div style="font-size:17px;font-weight:500;color:var(--color-text-primary)">18分</div></div>
+        <div class="met"><div style="font-size:11px;color:var(--color-text-secondary)">検査計</div><div style="font-size:17px;font-weight:500;color:var(--color-text-primary)">9分</div></div>
+        <div class="met"><div style="font-size:11px;color:var(--color-text-secondary)">負荷</div><div style="font-size:17px;font-weight:500;color:var(--color-text-primary)">142分</div></div>
+      </div>
+
+      <div style="padding:13px;text-align:center;background:var(--color-background-info);color:var(--color-text-info);border-radius:var(--border-radius-lg);font-size:15px;font-weight:500">生産実績を入力 <i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+    </div>
+  </div>
+</div>

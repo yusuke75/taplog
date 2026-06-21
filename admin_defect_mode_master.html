@@ -1,0 +1,29 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.hrow{display:flex;align-items:center;padding:8px 14px;font-size:12px;color:var(--color-text-tertiary)}
+.row{display:flex;align-items:center;padding:12px 14px;border-top:0.5px solid var(--color-border-tertiary)}
+.badge{font-size:12px;padding:3px 9px;border-radius:var(--border-radius-md)}
+.ico{font-size:18px;color:var(--color-text-secondary);margin-left:14px}
+</style>
+<h2 class="sr-only">不良モードマスタ管理画面のモック。各不良モードの表示順・有効無効・編集削除と、追加ボタン。</h2>
+<div style="padding:0.5rem 0">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <span style="font-size:15px;color:var(--color-text-secondary)"><i class="ti ti-chevron-left" aria-hidden="true"></i> マスタ管理 ／ <span style="color:var(--color-text-primary);font-weight:500">不良モード</span></span>
+    <span style="font-size:14px;padding:8px 14px;background:var(--color-background-info);color:var(--color-text-info);border-radius:var(--border-radius-md);font-weight:500"><i class="ti ti-plus" aria-hidden="true"></i> 不良モードを追加</span>
+  </div>
+
+  <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden">
+    <div class="hrow" style="background:var(--color-background-secondary)">
+      <span style="flex:1">名称</span>
+      <span style="width:70px;text-align:center">表示順</span>
+      <span style="width:70px;text-align:center">状態</span>
+      <span style="width:80px;text-align:right">操作</span>
+    </div>
+    <div class="row"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">巻き不良</span><span style="width:70px;text-align:center;color:var(--color-text-secondary)">1</span><span style="width:70px;text-align:center"><span class="badge" style="background:var(--color-background-success);color:var(--color-text-success)">有効</span></span><span style="width:80px;text-align:right"><i class="ti ti-edit ico" aria-hidden="true"></i><i class="ti ti-trash ico" aria-hidden="true"></i></span></div>
+    <div class="row"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">寸法不良</span><span style="width:70px;text-align:center;color:var(--color-text-secondary)">2</span><span style="width:70px;text-align:center"><span class="badge" style="background:var(--color-background-success);color:var(--color-text-success)">有効</span></span><span style="width:80px;text-align:right"><i class="ti ti-edit ico" aria-hidden="true"></i><i class="ti ti-trash ico" aria-hidden="true"></i></span></div>
+    <div class="row"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">外観不良</span><span style="width:70px;text-align:center;color:var(--color-text-secondary)">3</span><span style="width:70px;text-align:center"><span class="badge" style="background:var(--color-background-success);color:var(--color-text-success)">有効</span></span><span style="width:80px;text-align:right"><i class="ti ti-edit ico" aria-hidden="true"></i><i class="ti ti-trash ico" aria-hidden="true"></i></span></div>
+    <div class="row"><span style="flex:1;font-size:14px;color:var(--color-text-primary)">その他</span><span style="width:70px;text-align:center;color:var(--color-text-secondary)">4</span><span style="width:70px;text-align:center"><span class="badge" style="background:var(--color-background-success);color:var(--color-text-success)">有効</span></span><span style="width:80px;text-align:right"><i class="ti ti-edit ico" aria-hidden="true"></i><i class="ti ti-trash ico" aria-hidden="true"></i></span></div>
+    <div class="row"><span style="flex:1;font-size:14px;color:var(--color-text-secondary)">バリ不良</span><span style="width:70px;text-align:center;color:var(--color-text-secondary)">5</span><span style="width:70px;text-align:center"><span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">無効</span></span><span style="width:80px;text-align:right"><i class="ti ti-edit ico" aria-hidden="true"></i><i class="ti ti-trash ico" aria-hidden="true"></i></span></div>
+  </div>
+  <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:10px">有効にした不良モードが、作業者の生産実績入力に表示順どおりに並びます。</div>
+</div>

@@ -1,0 +1,54 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.phone{max-width:300px;margin:0 auto;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-xl);overflow:hidden}
+.stat{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 4px;font-size:12px;color:var(--color-text-tertiary)}
+.mcard{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:10px}
+.badge{font-size:12px;padding:3px 9px;border-radius:var(--border-radius-md);white-space:nowrap}
+</style>
+<h2 class="sr-only">作業者ホーム画面のモック。担当号機がカードで並び、各号機の稼働状態が表示される。下に新規ジョブ開始ボタン。</h2>
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem">
+  <div class="phone">
+    <div class="stat"><span>9:41</span><span><i class="ti ti-wifi-off" aria-hidden="true"></i>&nbsp;&nbsp;<i class="ti ti-battery-3" aria-hidden="true"></i></span></div>
+    <div style="padding:6px 16px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="font-size:18px;font-weight:500;color:var(--color-text-primary)">担当号機</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="display:flex;align-items:center;gap:6px;background:var(--color-background-secondary);padding:3px 8px 3px 4px;border-radius:999px">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;display:flex;align-items:center;justify-content:center">山</span>
+            <span style="font-size:12px;color:var(--color-text-secondary)">山田</span>
+          </div>
+          <span style="font-size:12px;color:var(--color-text-info);display:inline-flex;align-items:center;gap:3px"><i class="ti ti-switch-horizontal" aria-hidden="true"></i>交代</span>
+        </div>
+      </div>
+
+      <div class="mcard">
+        <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);min-width:46px">1号機</div>
+        <div style="flex:1">
+          <div style="font-size:14px;color:var(--color-text-primary)">品番 A-2203</div>
+          <div style="font-size:12px;color:var(--color-text-secondary)">ショット 12,400 ・ 経過 3:42</div>
+        </div>
+        <span class="badge" style="background:var(--color-background-success);color:var(--color-text-success)">生産中</span>
+      </div>
+
+      <div class="mcard">
+        <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);min-width:46px">2号機</div>
+        <div style="flex:1">
+          <div style="font-size:14px;color:var(--color-text-primary)">品番 B-5510</div>
+          <div style="font-size:12px;color:var(--color-text-secondary)">内段取り ・ 00:12 経過</div>
+        </div>
+        <span class="badge" style="background:var(--color-background-warning);color:var(--color-text-warning)">段取り中</span>
+      </div>
+
+      <div class="mcard">
+        <div style="font-size:15px;font-weight:500;color:var(--color-text-secondary);min-width:46px">3号機</div>
+        <div style="flex:1">
+          <div style="font-size:14px;color:var(--color-text-secondary)">ジョブ未開始</div>
+          <div style="font-size:12px;color:var(--color-text-tertiary)">タップして開始</div>
+        </div>
+        <span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">空き</span>
+      </div>
+
+      <div style="margin-top:6px;padding:13px;text-align:center;background:var(--color-background-info);color:var(--color-text-info);border-radius:var(--border-radius-lg);font-size:15px;font-weight:500"><i class="ti ti-plus" aria-hidden="true"></i> 新規ジョブ開始</div>
+    </div>
+  </div>
+</div>
