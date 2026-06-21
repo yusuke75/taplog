@@ -1,4 +1,4 @@
-// Worker login (要件 §7): QR/barcode scan (simulated) OR manual
+// Worker login (要件 §7): camera QR scan (社員証 = 社員番号) OR manual
 // employee-number entry. Works offline. Also exposes the 交代
 // (handover) flow that switches the logged-in operator.
 
@@ -6,10 +6,12 @@ import { el, icon, mount } from "../lib/dom.js";
 import { users, session } from "../data/store.js";
 import { openModal, toast, field } from "../lib/ui.js";
 import { Router } from "../lib/router.js";
+import { startScan, stop as stopScan, isSupported } from "./qr-scanner.js";
 
 const APP_ROOT = () => document.getElementById("app");
 
 export function renderLogin() {
+  stopScan(); // ensure any previous camera is released
   const wrap = el("div", { class: "login-wrap" });
 
   const corner = (pos) => {
@@ -22,12 +24,65 @@ export function renderLogin() {
     return el("span", { class: "qr-corner", style: styleByPos[pos] });
   };
 
+  const video = el("video", { class: "qr-video", playsinline: "", muted: "" });
+  const canvas = el("canvas", { style: { display: "none" } });
+  const placeholder = el("div", { class: "qr-placeholder" }, icon("qr_code_2"));
+  const frame = el("div", { class: "qr-frame" }, [
+    placeholder,
+    video,
+    canvas,
+    corner("tl"),
+    corner("tr"),
+    corner("bl"),
+    corner("br"),
+  ]);
+
+  const scanBtn = el("button", { class: "worker-cta tonal" });
+  const hint = el("p", { style: { color: "var(--color-text-secondary)", margin: "0", minHeight: "1.2em" } }, "QRコードを枠内にかざしてください");
+
+  let scanning = false;
+  const setScanning = (on) => {
+    scanning = on;
+    frame.classList.toggle("scanning", on);
+    placeholder.style.display = on ? "none" : "";
+    video.style.display = on ? "" : "none";
+    mount(scanBtn, on ? icon("stop") : icon("qr_code_scanner"), on ? "停止" : "カメラでスキャン");
+    hint.textContent = on ? "社員証のQRコードを枠内にかざしてください" : "「カメラでスキャン」で社員証を読み取ります";
+  };
+
+  scanBtn.addEventListener("click", async () => {
+    if (scanning) {
+      stopScan();
+      setScanning(false);
+      return;
+    }
+    if (!isSupported()) {
+      toast("この端末ではカメラ読み取りを利用できません。手入力をご利用ください。", "danger");
+      return;
+    }
+    try {
+      setScanning(true);
+      await startScan(video, canvas, (value) => {
+        setScanning(false);
+        doLogin(value, false);
+      });
+    } catch (err) {
+      setScanning(false);
+      toast(cameraErrorMessage(err), "danger");
+    }
+  });
+
+  setScanning(false);
+
+  // Release the camera if the user navigates away mid-scan.
+  window.addEventListener("hashchange", stopScan, { once: true });
+
   wrap.append(
     el("p", { style: { color: "var(--color-text-secondary)", fontSize: "0.95rem", margin: "0" } }, "TapLog ・ プレス日報"),
     el("h2", { style: { fontSize: "1.4rem", fontWeight: "600", margin: "8px 0 4px" } }, "社員証をスキャン"),
-    el("p", { style: { color: "var(--color-text-secondary)", margin: "0" } }, "QRコードを枠内にかざしてください"),
-    el("div", { class: "qr-frame" }, [icon("qr_code_2"), corner("tl"), corner("tr"), corner("bl"), corner("br")]),
-    el("button", { class: "worker-cta tonal", onclick: simulateScan }, [icon("qr_code_scanner"), "スキャンをシミュレート"]),
+    hint,
+    frame,
+    scanBtn,
     el("div", { class: "login-divider" }, "または"),
     el("button", { class: "worker-cta tonal", onclick: () => openManualLogin(false) }, [icon("keyboard"), "社員番号を手入力"]),
     el("div", { style: { display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--color-text-secondary)", fontSize: "0.85rem", marginTop: "12px" } }, [
@@ -43,14 +98,16 @@ export function renderLogin() {
   mount(APP_ROOT(), root);
 }
 
-/** Simulate a QR scan by picking the first active worker's card. */
-function simulateScan() {
-  const worker = users.active().find((u) => u.role === "worker");
-  if (!worker) {
-    toast("有効な作業者がいません", "danger");
-    return;
+/** User-friendly message for common getUserMedia failures. */
+function cameraErrorMessage(err) {
+  const name = err && err.name;
+  if (name === "NotAllowedError" || name === "SecurityError") {
+    return "カメラの使用が許可されませんでした。設定で許可するか、手入力をご利用ください。";
   }
-  doLogin(worker.cardCode, false);
+  if (name === "NotFoundError" || name === "OverconstrainedError") {
+    return "カメラが見つかりませんでした。手入力をご利用ください。";
+  }
+  return `カメラを起動できませんでした（${err && err.message ? err.message : "不明なエラー"}）。手入力をご利用ください。`;
 }
 
 function openManualLogin(isHandover) {
