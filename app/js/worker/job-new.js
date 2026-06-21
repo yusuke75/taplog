@@ -16,15 +16,39 @@ export function renderJobNew(params = {}) {
     onBack: () => Router.go("/worker"),
   });
 
-  const state = { machineId: params.machine || "", productId: "", lot: "" };
+  // If a machine was already chosen on the home screen, it is fixed here
+  // (no need to re-select). Otherwise show the machine selector.
+  const fixedMachine = params.machine ? machines.get(params.machine) : null;
+  const state = { machineId: fixedMachine ? fixedMachine.id : "", productId: "", lot: "" };
 
-  // --- 号機 select ---
-  const machineSelect = selectField(
-    "号機を選択",
-    machines.active().map((m) => ({ value: m.id, label: m.name })),
-    state.machineId,
-    (v) => (state.machineId = v)
-  );
+  // --- 号機: fixed display or selector ---
+  const machineField = fixedMachine
+    ? el("div", { class: "field" }, [
+        el("span", { class: "field-label" }, "号機"),
+        el(
+          "div",
+          {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "14px 16px",
+              background: "var(--color-background-secondary)",
+              borderRadius: "var(--border-radius-md)",
+            },
+          },
+          [
+            icon("precision_manufacturing", { style: { color: "var(--color-text-info)" } }),
+            el("span", { style: { fontSize: "1.15rem", fontWeight: "600" } }, fixedMachine.name),
+          ]
+        ),
+      ])
+    : selectField(
+        "号機を選択",
+        machines.active().map((m) => ({ value: m.id, label: m.name })),
+        "",
+        (v) => (state.machineId = v)
+      );
 
   // --- 品番 select (SPM auto-display) ---
   const spmDisplay = el("div", { class: "metric-tile", style: { textAlign: "left", padding: "14px 16px" } }, [
@@ -51,7 +75,7 @@ export function renderJobNew(params = {}) {
   lotInput.addEventListener("input", (e) => (state.lot = e.target.value));
 
   body.append(
-    machineSelect,
+    machineField,
     productSelect,
     spmDisplay,
     el("label", { class: "field" }, [el("span", { class: "field-label" }, "ロット番号（任意）"), lotInput]),
