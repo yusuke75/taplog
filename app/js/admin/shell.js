@@ -29,23 +29,39 @@ const NAV = [
  * `active` is the current route path used to highlight the nav item.
  */
 export function adminShell(active) {
-  const sidebar = el("div", { class: "admin-sidebar" }, [
-    el("div", { class: "admin-brand" }, [icon("touch_app"), "TapLog"]),
-    ...NAV.flatMap((section) => [
-      el("div", { class: "nav-group-label" }, section.group),
-      ...section.items.map((item) =>
-        el(
-          "a",
-          { href: item.href, class: `nav-item ${active === item.match ? "active" : ""}` },
-          [icon(item.icon), item.label]
-        )
-      ),
-    ]),
-    el("a", { href: "#/", class: "nav-item", style: { marginTop: "auto" } }, [icon("logout"), "入口に戻る"]),
+  const root = el("div", { class: "admin" });
+  const closeDrawer = () => root.classList.remove("drawer-open");
+
+  const navItems = NAV.flatMap((section) => [
+    el("div", { class: "nav-group-label" }, section.group),
+    ...section.items.map((item) =>
+      el(
+        "a",
+        { href: item.href, class: `nav-item ${active === item.match ? "active" : ""}`, onclick: closeDrawer },
+        [icon(item.icon), item.label]
+      )
+    ),
   ]);
 
+  const sidebar = el("aside", { class: "admin-sidebar" }, [
+    el("div", { class: "admin-brand" }, [icon("touch_app"), "TapLog"]),
+    ...navItems,
+    el("a", { href: "#/", class: "nav-item", style: { marginTop: "auto" }, onclick: closeDrawer }, [
+      icon("logout"),
+      "入口に戻る",
+    ]),
+  ]);
+
+  // Mobile-only top bar with a hamburger that toggles the drawer.
+  const topbar = el("header", { class: "admin-topbar" }, [
+    el("button", { class: "admin-hamburger", "aria-label": "メニュー", onclick: () => root.classList.toggle("drawer-open") }, icon("menu")),
+    el("div", { class: "admin-brand", style: { padding: "0", fontSize: "1.1rem" } }, [icon("touch_app"), "TapLog"]),
+  ]);
+
+  const scrim = el("div", { class: "admin-scrim", onclick: closeDrawer });
   const main = el("div", { class: "admin-main" });
-  const root = el("div", { class: "admin" }, [sidebar, main]);
+
+  root.append(topbar, sidebar, scrim, main);
   mount(APP_ROOT(), root);
   return main;
 }

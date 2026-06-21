@@ -3,12 +3,22 @@
    ============================================================ */
 
 .admin {
-  display: grid;
-  grid-template-columns: var(--admin-sidebar-width) 1fr;
+  display: flex;
+  align-items: flex-start;
   min-height: 100vh;
 }
 
+/* Mobile top bar + scrim are hidden on desktop. */
+.admin-topbar {
+  display: none;
+}
+.admin-scrim {
+  display: none;
+}
+
 .admin-sidebar {
+  flex-shrink: 0;
+  width: var(--admin-sidebar-width);
   background: var(--color-background-primary);
   border-right: 1px solid var(--color-border-tertiary);
   padding: 20px 14px;
@@ -18,6 +28,26 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
+}
+
+.admin-hamburger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+}
+.admin-hamburger:active {
+  background: var(--color-background-secondary);
+}
+.admin-hamburger .material-symbols-rounded {
+  font-size: 26px;
 }
 
 .admin-brand {
@@ -65,6 +95,8 @@
 }
 
 .admin-main {
+  flex: 1;
+  min-width: 0;
   padding: 28px 32px;
   max-width: 1200px;
   width: 100%;
@@ -181,7 +213,7 @@
   background: var(--color-background-primary);
   border: 1px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
 }
 table.data {
   width: 100%;
@@ -307,30 +339,68 @@ table.data tr:hover td {
   font-size: 1.05rem;
 }
 
-/* responsive: collapse sidebar to top bar on narrow screens */
+/* responsive: hamburger + slide-in drawer on narrow screens */
 @media (max-width: 860px) {
   .admin {
-    grid-template-columns: 1fr;
+    display: block;
   }
-  .admin-sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
+
+  .admin-topbar {
+    display: flex;
     align-items: center;
-    overflow-x: auto;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 120;
+    padding: 8px 12px;
+    background: var(--color-background-primary);
+    border-bottom: 1px solid var(--color-border-tertiary);
   }
-  .admin-brand {
-    width: 100%;
-    padding-bottom: 8px;
+  .admin-topbar .admin-brand .material-symbols-rounded {
+    color: var(--md-primary);
   }
-  .nav-group-label {
-    display: none;
+
+  /* Sidebar becomes an off-canvas drawer */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 268px;
+    max-width: 84vw;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: var(--shadow-3);
   }
+  .admin.drawer-open .admin-sidebar {
+    transform: translateX(0);
+  }
+
+  .admin-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(15, 17, 25, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .admin.drawer-open .admin-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .admin-main {
     padding: 20px 16px;
+    max-width: 100%;
   }
   .two-col {
     grid-template-columns: 1fr;
+  }
+  /* Wide tables scroll horizontally instead of squishing columns. */
+  table.data {
+    min-width: 560px;
   }
 }
