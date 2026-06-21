@@ -9,20 +9,13 @@ import { EVENT_TYPES, eventLabel } from "../domain/events.js";
 import { clock, eventDurationMs } from "../lib/time.js";
 import { setupMinutes, inspectMinutes, loadMinutes } from "../domain/calc.js";
 import { now } from "../lib/id.js";
+import { viewInterval, clearViewTimers } from "../lib/view.js";
 import { workerShell, requireOperator } from "./shell.js";
 
 const APP_ROOT = () => document.getElementById("app");
-let ticker = null;
-
-function stopTicker() {
-  if (ticker) {
-    clearInterval(ticker);
-    ticker = null;
-  }
-}
 
 export function renderRecord(params) {
-  stopTicker();
+  clearViewTimers();
   if (!requireOperator()) return;
 
   const job = jobs.get(params.id);
@@ -87,7 +80,7 @@ export function renderRecord(params) {
   };
 
   repaint();
-  ticker = setInterval(repaint, 1000);
+  viewInterval(repaint, 1000);
 
   mount(APP_ROOT(), root);
 }
@@ -169,7 +162,7 @@ function confirmFinish(jobId) {
     kind: "btn-primary",
     onConfirm: () => {
       jobs.finish(jobId);
-      stopTicker();
+      clearViewTimers();
       toast("ジョブを終了しました", "success");
       Router.go("/worker");
     },
