@@ -10,19 +10,20 @@ import { startScan, stop as stopScan, isSupported } from "./qr-scanner.js";
 
 const APP_ROOT = () => document.getElementById("app");
 
+/** A corner guide for the QR frame (shared by login + scan modal). */
+function corner(pos) {
+  const styleByPos = {
+    tl: { top: "12px", left: "12px", borderTop: "3px solid var(--color-text-info)", borderLeft: "3px solid var(--color-text-info)" },
+    tr: { top: "12px", right: "12px", borderTop: "3px solid var(--color-text-info)", borderRight: "3px solid var(--color-text-info)" },
+    bl: { bottom: "12px", left: "12px", borderBottom: "3px solid var(--color-text-info)", borderLeft: "3px solid var(--color-text-info)" },
+    br: { bottom: "12px", right: "12px", borderBottom: "3px solid var(--color-text-info)", borderRight: "3px solid var(--color-text-info)" },
+  };
+  return el("span", { class: "qr-corner", style: styleByPos[pos] });
+}
+
 export function renderLogin() {
   stopScan(); // ensure any previous camera is released
   const wrap = el("div", { class: "login-wrap" });
-
-  const corner = (pos) => {
-    const styleByPos = {
-      tl: { top: "12px", left: "12px", borderTop: "3px solid var(--color-text-info)", borderLeft: "3px solid var(--color-text-info)" },
-      tr: { top: "12px", right: "12px", borderTop: "3px solid var(--color-text-info)", borderRight: "3px solid var(--color-text-info)" },
-      bl: { bottom: "12px", left: "12px", borderBottom: "3px solid var(--color-text-info)", borderLeft: "3px solid var(--color-text-info)" },
-      br: { bottom: "12px", right: "12px", borderBottom: "3px solid var(--color-text-info)", borderRight: "3px solid var(--color-text-info)" },
-    };
-    return el("span", { class: "qr-corner", style: styleByPos[pos] });
-  };
 
   const video = el("video", { class: "qr-video", playsinline: "", muted: "" });
   const canvas = el("canvas", { style: { display: "none" } });
@@ -154,11 +155,11 @@ export function openHandover() {
     actions: [
       { label: "閉じる", kind: "btn-ghost", onClick: (c) => c() },
       {
-        label: "別の社員証をスキャン",
+        label: "社員証をスキャン",
         kind: "btn-tonal",
         onClick: (c) => {
           c();
-          handoverScan();
+          openScanModal({ title: "交代：社員証をスキャン", onCode: (value) => doLogin(value, true) });
         },
       },
       {
@@ -173,14 +174,51 @@ export function openHandover() {
   });
 }
 
-function handoverScan() {
-  const current = session.current();
-  const next = users.active().find((u) => u.role === "worker" && (!current || u.id !== current.id));
-  if (!next) {
-    toast("交代できる作業者がいません", "danger");
+/**
+ * Camera-scan modal usable anywhere (e.g. 交代). Streams the rear
+ * camera; on the first decoded QR it closes and calls onCode(value).
+ */
+function openScanModal({ title, onCode }) {
+  if (!isSupported()) {
+    toast("この端末ではカメラ読み取りを利用できません。手入力をご利用ください。", "danger");
+    openManualLogin(true);
     return;
   }
-  session.login(next.id);
-  toast(`${next.name} さんに交代しました`, "success");
-  window.dispatchEvent(new CustomEvent("taplog:rerender"));
+
+  const video = el("video", { class: "qr-video", playsinline: "", muted: "" });
+  const canvas = el("canvas", { style: { display: "none" } });
+  const frame = el("div", { class: "qr-frame scanning", style: { margin: "0 auto" } }, [
+    video,
+    canvas,
+    corner("tl"),
+    corner("tr"),
+    corner("bl"),
+    corner("br"),
+  ]);
+  const hint = el("p", { style: { textAlign: "center", color: "var(--color-text-secondary)", margin: "10px 0 0" } }, "社員証のQRコードを枠内にかざしてください");
+
+  const close = openModal({
+    title,
+    body: [frame, hint],
+    actions: [
+      { label: "閉じる", kind: "btn-ghost", onClick: (c) => c() },
+      {
+        label: "手入力",
+        kind: "btn-tonal",
+        onClick: (c) => {
+          c();
+          openManualLogin(true);
+        },
+      },
+    ],
+    onClose: () => stopScan(),
+  });
+
+  startScan(video, canvas, (value) => {
+    close();
+    onCode(value);
+  }).catch((err) => {
+    hint.textContent = cameraErrorMessage(err);
+    hint.style.color = "var(--color-text-danger)";
+  });
 }

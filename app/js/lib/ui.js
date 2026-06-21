@@ -30,9 +30,15 @@ export function toast(message, kind = "default", ms = 2400) {
  * Open a modal. `body` is an array of nodes. `actions` is an array of
  * { label, kind, onClick(close) }. Returns a close() function.
  */
-export function openModal({ title, body = [], actions = [] }) {
+export function openModal({ title, body = [], actions = [], onClose = null }) {
   const backdrop = el("div", { class: "modal-backdrop" });
-  const close = () => backdrop.remove();
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    backdrop.remove();
+    if (onClose) onClose();
+  };
 
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) close();
