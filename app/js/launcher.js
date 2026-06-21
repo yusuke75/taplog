@@ -3,12 +3,13 @@
 
 import { el, icon, mount } from "./lib/dom.js";
 import { Router } from "./lib/router.js";
-import { resetAll } from "./data/store.js";
+import { resetAll, getMode } from "./data/store.js";
 import { toast, confirmModal } from "./lib/ui.js";
 
 const APP_ROOT = () => document.getElementById("app");
 
 export function renderLauncher() {
+  const remote = getMode() === "remote";
   const card = (iconName, title, desc, onClick, accent) =>
     el(
       "button",
@@ -39,16 +40,25 @@ export function renderLauncher() {
     el(
       "div",
       { style: { textAlign: "center", marginTop: "40px" } },
-      el(
-        "button",
-        { class: "btn btn-ghost", onclick: () => askReset() },
-        [icon("restart_alt"), "デモデータを初期化"]
-      )
+      remote
+        ? el("button", { class: "btn btn-ghost", onclick: () => refresh() }, [icon("sync"), "最新の状態に更新"])
+        : el("button", { class: "btn btn-ghost", onclick: () => askReset() }, [icon("restart_alt"), "デモデータを初期化"])
     ),
-    el("p", { style: { textAlign: "center", color: "var(--color-text-tertiary)", fontSize: "0.8rem", marginTop: "8px" } }, "データは端末のローカル（localStorage）に保存されます。"),
+    el(
+      "p",
+      { style: { textAlign: "center", color: "var(--color-text-tertiary)", fontSize: "0.8rem", marginTop: "8px", display: "flex", gap: "6px", justifyContent: "center", alignItems: "center" } },
+      remote
+        ? [icon("cloud_done", { style: { fontSize: "16px", color: "var(--color-text-success)" } }), "共有データベース（Supabase）に保存され、全端末でリアルタイム共有されます。"]
+        : [icon("smartphone", { style: { fontSize: "16px" } }), "データは端末のローカル（localStorage）に保存されます。"]
+    ),
   ]);
 
   mount(APP_ROOT(), root);
+}
+
+function refresh() {
+  resetAll();
+  toast("最新の状態に更新しました", "success");
 }
 
 function askReset() {

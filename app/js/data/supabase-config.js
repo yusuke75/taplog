@@ -12,8 +12,9 @@
 // 切り替わります。
 // ============================================================
 
-export const SUPABASE_URL = "https://YOUR-PROJECT-ref.supabase.co";
-export const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+export const SUPABASE_URL = "https://pgptvtvjwceqhlcaygdt.supabase.co";
+export const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBncHR2dHZqd2NlcWhsY2F5Z2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMzk5MjQsImV4cCI6MjA5NzYxNTkyNH0.lt_Sg3GfuylodqPg9sjD4ZxOmL9tWsTZuYb-jSJmQgg";
 
 /** 設定が実値に置き換わっているか判定（プレースホルダなら false）。 */
 export function isSupabaseConfigured() {

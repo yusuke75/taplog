@@ -4,8 +4,8 @@
     {
       "name": "taplog",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "app"],
-      "port": 8765
+      "runtimeArgs": ["-m", "http.server", "8771", "--directory", "app"],
+      "port": 8771
     }
   ]
 }

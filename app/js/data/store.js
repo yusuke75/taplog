@@ -1,22 +1,58 @@
 // ============================================================
 // TapLog store — single source of truth.
 //
-// Persists to localStorage (offline-first, 要件 §9). All updates
-// are immutable: every mutator returns a brand-new state object
-// and never edits the previous one in place (coding-style rule).
-// A tiny pub/sub notifies views on change.
+// Two backends, same public API:
+//   - "remote": Supabase shared DB (multi-device + realtime). Writes
+//     are optimistic (cache updates instantly) and queued to an
+//     offline outbox if the network is down, then flushed on reconnect.
+//   - "local": localStorage only (used when Supabase is not configured).
+//
+// Reads are always synchronous from an in-memory cache, so views are
+// unchanged. All cache updates are immutable (coding-style rule).
 // ============================================================
 
 import { buildSeed, emptyResult } from "./seed.js";
 import { uid, now } from "../lib/id.js";
+import { isSupabaseConfigured } from "./supabase-config.js";
+import * as remote from "./remote.js";
 
 const STORAGE_KEY = "taplog.state.v1";
+const SESSION_KEY = "taplog.session.v1";
+const OUTBOX_KEY = "taplog.outbox.v1";
 
-let state = load();
+let mode = "local"; // set during init()
+let cache = emptyCache();
 const listeners = new Set();
 
-// ---- persistence ----
-function load() {
+function emptyCache() {
+  return { machines: [], products: [], users: [], defectModes: [], jobs: [], session: { operatorId: null } };
+}
+
+// ============================================================
+// Initialisation — called once at startup before the first render.
+// ============================================================
+export async function init() {
+  if (isSupabaseConfigured()) {
+    mode = "remote";
+    const data = await remote.loadAll();
+    cache = { ...data, session: loadSession() };
+    remote.subscribeRealtime(scheduleReload);
+    window.addEventListener("online", flushOutbox);
+    flushOutbox();
+  } else {
+    mode = "local";
+    cache = loadLocal();
+  }
+}
+
+export function getMode() {
+  return mode;
+}
+
+// ============================================================
+// Persistence helpers
+// ============================================================
+function loadLocal() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
@@ -24,35 +60,60 @@ function load() {
     console.error("TapLog: failed to read saved state, reseeding.", err);
   }
   const seed = buildSeed();
-  persist(seed);
+  persistLocal(seed);
   return seed;
 }
 
-function persist(next) {
+function persistLocal(state) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (err) {
-    // Never silently swallow — surface to console (coding-style rule).
     console.error("TapLog: failed to persist state.", err);
   }
 }
 
-/** Replace state immutably, persist, and notify subscribers. */
-function commit(next) {
-  state = next;
-  persist(state);
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (err) {
+    console.error("TapLog: failed to read session.", err);
+  }
+  return { operatorId: null };
+}
+
+function persistSession(session) {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch (err) {
+    console.error("TapLog: failed to persist session.", err);
+  }
+}
+
+// ============================================================
+// Commit: replace cache immutably, persist, notify subscribers.
+// `ops` is a list of remote operations to send (remote mode only).
+// ============================================================
+function commit(next, ops = []) {
+  cache = next;
+  if (mode === "local") persistLocal(cache);
+  else persistSession(cache.session); // session always local (per device)
+  notify();
+  if (mode === "remote" && ops.length) sendOps(ops);
+}
+
+function notify() {
   listeners.forEach((fn) => {
     try {
-      fn(state);
+      fn(cache);
     } catch (err) {
       console.error("TapLog: subscriber threw.", err);
     }
   });
 }
 
-// ---- public read API ----
 export function getState() {
-  return state;
+  return cache;
 }
 
 export function subscribe(fn) {
@@ -60,34 +121,141 @@ export function subscribe(fn) {
   return () => listeners.delete(fn);
 }
 
-export function resetAll() {
-  commit(buildSeed());
+// ============================================================
+// Remote send + offline outbox
+// ============================================================
+function makeUpsert(collection, row) {
+  return { kind: "upsert", collection, row };
+}
+function makeDelete(collection, id) {
+  return { kind: "delete", collection, id };
 }
 
-// ---- generic collection helpers (immutable) ----
+async function runOp(op) {
+  if (op.kind === "upsert") return remote.upsert(op.collection, op.row);
+  return remote.remove(op.collection, op.id);
+}
+
+// All remote ops run through one serialized chain so they persist in
+// submission order (e.g. a job row before its event rows — events have a
+// foreign key to jobs). Without this, parallel upserts can violate the FK.
+let sendChain = Promise.resolve();
+function sendOps(ops) {
+  sendChain = sendChain.then(() => sendOpsNow(ops));
+  return sendChain;
+}
+
+async function sendOpsNow(ops) {
+  for (const op of ops) {
+    if (!navigator.onLine) {
+      enqueue(op);
+      continue;
+    }
+    try {
+      await runOp(op);
+    } catch (err) {
+      console.error("TapLog: remote op failed, queued for retry.", err);
+      enqueue(op);
+    }
+  }
+}
+
+function loadOutbox() {
+  try {
+    return JSON.parse(localStorage.getItem(OUTBOX_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+function saveOutbox(ops) {
+  localStorage.setItem(OUTBOX_KEY, JSON.stringify(ops));
+}
+function enqueue(op) {
+  const box = loadOutbox();
+  box.push(op);
+  saveOutbox(box);
+}
+
+let flushing = false;
+export async function flushOutbox() {
+  if (flushing || mode !== "remote" || !navigator.onLine) return;
+  flushing = true;
+  try {
+    let box = loadOutbox();
+    const remaining = [];
+    for (const op of box) {
+      try {
+        await runOp(op);
+      } catch (err) {
+        remaining.push(op);
+      }
+    }
+    saveOutbox(remaining);
+  } finally {
+    flushing = false;
+  }
+}
+
+export function pendingCount() {
+  return loadOutbox().length;
+}
+
+// ============================================================
+// Realtime: debounced full reload from server.
+// ============================================================
+let reloadTimer = null;
+function scheduleReload() {
+  if (mode !== "remote") return;
+  clearTimeout(reloadTimer);
+  reloadTimer = setTimeout(reloadFromRemote, 250);
+}
+
+async function reloadFromRemote() {
+  try {
+    const data = await remote.loadAll();
+    cache = { ...data, session: cache.session };
+    notify();
+  } catch (err) {
+    console.error("TapLog: realtime reload failed.", err);
+  }
+}
+
+export async function resetAll() {
+  if (mode === "remote") {
+    await reloadFromRemote(); // never wipe shared data; just refresh
+  } else {
+    commit(buildSeed());
+  }
+}
+
+// ============================================================
+// Generic immutable collection helpers (build new cache + ops)
+// ============================================================
 function addTo(key, record) {
-  commit({ ...state, [key]: [...state[key], record] });
+  commit({ ...cache, [key]: [...cache[key], record] }, [makeUpsert(key, record)]);
 }
 
 function updateIn(key, id, patch) {
-  commit({
-    ...state,
-    [key]: state[key].map((r) => (r.id === id ? { ...r, ...patch } : r)),
-  });
+  const updated = cache[key].map((r) => (r.id === id ? { ...r, ...patch } : r));
+  const row = updated.find((r) => r.id === id);
+  commit({ ...cache, [key]: updated }, row ? [makeUpsert(key, row)] : []);
 }
 
 function removeFrom(key, id) {
-  commit({ ...state, [key]: state[key].filter((r) => r.id !== id) });
+  commit({ ...cache, [key]: cache[key].filter((r) => r.id !== id) }, [makeDelete(key, id)]);
 }
 
 // ============================================================
 // Masters — Machines
 // ============================================================
 export const machines = {
-  list: () => state.machines,
-  active: () => state.machines.filter((m) => m.active),
-  get: (id) => state.machines.find((m) => m.id === id) || null,
-  add: (data) => addTo("machines", { id: uid("m"), active: true, ...data }),
+  list: () => cache.machines,
+  active: () => cache.machines.filter((m) => m.active),
+  get: (id) => cache.machines.find((m) => m.id === id) || null,
+  add: (data) => {
+    const maxOrder = cache.machines.reduce((m, x) => Math.max(m, x.sortOrder || 0), 0);
+    addTo("machines", { id: uid("m"), active: true, sortOrder: maxOrder + 1, ...data });
+  },
   update: (id, patch) => updateIn("machines", id, patch),
   toggle: (id) => {
     const m = machines.get(id);
@@ -100,17 +268,11 @@ export const machines = {
 // Masters — Products (品番)
 // ============================================================
 export const products = {
-  list: () => state.products,
-  active: () => state.products.filter((p) => p.active),
-  get: (id) => state.products.find((p) => p.id === id) || null,
+  list: () => cache.products,
+  active: () => cache.products.filter((p) => p.active),
+  get: (id) => cache.products.find((p) => p.id === id) || null,
   add: (data) =>
-    addTo("products", {
-      id: uid("p"),
-      active: true,
-      standardSpm: 0,
-      standardSetupMin: 0,
-      ...data,
-    }),
+    addTo("products", { id: uid("p"), active: true, standardSpm: 0, standardSetupMin: 0, ...data }),
   update: (id, patch) => updateIn("products", id, patch),
   toggle: (id) => {
     const p = products.get(id);
@@ -123,9 +285,9 @@ export const products = {
 // Masters — Users (作業者)
 // ============================================================
 export const users = {
-  list: () => state.users,
-  active: () => state.users.filter((u) => u.active),
-  get: (id) => state.users.find((u) => u.id === id) || null,
+  list: () => cache.users,
+  active: () => cache.users.filter((u) => u.active),
+  get: (id) => cache.users.find((u) => u.id === id) || null,
   add: (data) => addTo("users", { id: uid("u"), active: true, role: "worker", ...data }),
   update: (id, patch) => updateIn("users", id, patch),
   toggle: (id) => {
@@ -133,15 +295,10 @@ export const users = {
     if (u) updateIn("users", id, { active: !u.active });
   },
   remove: (id) => removeFrom("users", id),
-  /** Login lookup: by card code OR employee number (要件 §7). */
   authenticate: (code) => {
     const key = String(code || "").trim();
     if (!key) return null;
-    return (
-      state.users.find(
-        (u) => u.active && (u.cardCode === key || u.employeeNo === key)
-      ) || null
-    );
+    return cache.users.find((u) => u.active && (u.cardCode === key || u.employeeNo === key)) || null;
   },
 };
 
@@ -149,12 +306,11 @@ export const users = {
 // Masters — Defect modes (不良モード)
 // ============================================================
 export const defectModes = {
-  list: () => [...state.defectModes].sort((a, b) => a.order - b.order),
-  active: () =>
-    state.defectModes.filter((d) => d.active).sort((a, b) => a.order - b.order),
-  get: (id) => state.defectModes.find((d) => d.id === id) || null,
+  list: () => [...cache.defectModes].sort((a, b) => a.order - b.order),
+  active: () => cache.defectModes.filter((d) => d.active).sort((a, b) => a.order - b.order),
+  get: (id) => cache.defectModes.find((d) => d.id === id) || null,
   add: (data) => {
-    const maxOrder = state.defectModes.reduce((m, d) => Math.max(m, d.order), 0);
+    const maxOrder = cache.defectModes.reduce((m, d) => Math.max(m, d.order), 0);
     addTo("defectModes", { id: uid("d"), active: true, order: maxOrder + 1, ...data });
   },
   update: (id, patch) => updateIn("defectModes", id, patch),
@@ -166,23 +322,23 @@ export const defectModes = {
 };
 
 // ============================================================
-// Session (current logged-in operator on the shared device)
+// Session (per-device; never shared)
 // ============================================================
 export const session = {
-  current: () => (state.session.operatorId ? users.get(state.session.operatorId) : null),
-  login: (userId) => commit({ ...state, session: { operatorId: userId } }),
-  logout: () => commit({ ...state, session: { operatorId: null } }),
+  current: () => (cache.session.operatorId ? users.get(cache.session.operatorId) : null),
+  login: (userId) => commit({ ...cache, session: { operatorId: userId } }),
+  logout: () => commit({ ...cache, session: { operatorId: null } }),
 };
 
 // ============================================================
 // Jobs (ジョブ＝紙1枚) + events
 // ============================================================
 export const jobs = {
-  list: () => state.jobs,
-  active: () => state.jobs.filter((j) => j.status === "active"),
-  get: (id) => state.jobs.find((j) => j.id === id) || null,
+  list: () => cache.jobs,
+  active: () => cache.jobs.filter((j) => j.status === "active"),
+  get: (id) => cache.jobs.find((j) => j.id === id) || null,
   forMachine: (machineId) =>
-    state.jobs.find((j) => j.machineId === machineId && j.status === "active") || null,
+    cache.jobs.find((j) => j.machineId === machineId && j.status === "active") || null,
 
   start({ machineId, productId, lot, operatorId }) {
     const product = products.get(productId);
@@ -212,27 +368,38 @@ export const jobs = {
     updateIn("jobs", jobId, { result, comment: result.comment || "" });
   },
 
-  // ---- events ----
+  // ---- events (stored in cache nested under the job; in DB as rows) ----
   startEvent(jobId, type, operatorId) {
     const job = jobs.get(jobId);
     if (!job) return;
-    // Close any still-running event first (one active event at a time).
-    const closed = job.events.map((e) =>
-      e.endedAt == null ? { ...e, endedAt: now() } : e
-    );
-    const event = { id: uid("evt"), type, operatorId, startedAt: now(), endedAt: null };
-    updateIn("jobs", jobId, { events: [...closed, event] });
+    const ops = [];
+    const closed = job.events.map((e) => {
+      if (e.endedAt == null) {
+        const c = { ...e, endedAt: now() };
+        ops.push(makeUpsert("events", c));
+        return c;
+      }
+      return e;
+    });
+    const event = { id: uid("evt"), jobId, type, operatorId, startedAt: now(), endedAt: null };
+    ops.push(makeUpsert("events", event));
+    commitJob(jobId, { events: [...closed, event] }, ops);
     return event;
   },
 
   stopEvent(jobId, eventId) {
     const job = jobs.get(jobId);
     if (!job) return;
-    updateIn("jobs", jobId, {
-      events: job.events.map((e) =>
-        e.id === eventId && e.endedAt == null ? { ...e, endedAt: now() } : e
-      ),
+    const ops = [];
+    const events = job.events.map((e) => {
+      if (e.id === eventId && e.endedAt == null) {
+        const c = { ...e, endedAt: now() };
+        ops.push(makeUpsert("events", c));
+        return c;
+      }
+      return e;
     });
+    commitJob(jobId, { events }, ops);
   },
 
   runningEvent(jobId) {
@@ -241,3 +408,11 @@ export const jobs = {
     return job.events.find((e) => e.endedAt == null) || null;
   },
 };
+
+/** Patch a single job in cache immutably and send the given ops. */
+function commitJob(jobId, patch, ops) {
+  commit(
+    { ...cache, jobs: cache.jobs.map((j) => (j.id === jobId ? { ...j, ...patch } : j)) },
+    ops
+  );
+}

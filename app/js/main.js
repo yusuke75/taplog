@@ -1,8 +1,11 @@
 // ============================================================
-// TapLog entry point — wires routes to views.
+// TapLog entry point — initialises the data layer (local or
+// Supabase shared DB), then wires routes to views.
 // ============================================================
 
 import { Router } from "./lib/router.js";
+import { el, icon, mount } from "./lib/dom.js";
+import { init as initStore, subscribe, getMode } from "./data/store.js";
 import { renderLauncher } from "./launcher.js";
 import { renderLogin } from "./worker/login.js";
 import { renderHome } from "./worker/home.js";
@@ -14,17 +17,16 @@ import { renderMasters } from "./admin/masters.js";
 import { renderDashboard } from "./admin/dashboard.js";
 import { renderJobs, renderJobDetail } from "./admin/jobs.js";
 
+const APP_ROOT = () => document.getElementById("app");
 const router = new Router();
 
 router
   .on("/", renderLauncher)
-  // --- worker ---
   .on("/worker/login", renderLogin)
   .on("/worker", renderHome)
   .on("/worker/job/new", renderJobNew)
   .on("/worker/job/:id", renderRecord)
   .on("/worker/job/:id/result", renderResult)
-  // --- admin ---
   .on("/admin", renderAdminHome)
   .on("/admin/masters/:type", renderMasters)
   .on("/admin/dashboard", renderDashboard)
@@ -32,8 +34,62 @@ router
   .on("/admin/jobs/:id", renderJobDetail)
   .fallback(renderLauncher);
 
-// Allow views to request an in-place re-render (e.g. after login/handover,
-// master edits) without changing the route.
-window.addEventListener("taplog:rerender", () => router.resolve());
+// ---- live re-render on data changes (local actions OR other devices) ----
+// Forms keep a local working copy, so skip auto-rerender there to avoid
+// wiping in-progress input when a remote change arrives.
+const NO_AUTO_RERENDER = [/\/result$/, /\/job\/new/];
+let rerenderTimer = null;
+function scheduleRerender() {
+  if (NO_AUTO_RERENDER.some((re) => re.test(location.hash))) return;
+  clearTimeout(rerenderTimer);
+  rerenderTimer = setTimeout(() => router.resolve(), 40);
+}
 
-router.start();
+window.addEventListener("taplog:rerender", () => router.resolve());
+subscribe(scheduleRerender);
+
+// ---- boot ----
+showLoading();
+initStore()
+  .then(() => {
+    if (getMode() === "remote") console.info("TapLog: connected to Supabase shared DB.");
+    router.start();
+  })
+  .catch((err) => {
+    console.error("TapLog: initialisation failed.", err);
+    showError(err);
+  });
+
+function showLoading() {
+  mount(
+    APP_ROOT(),
+    el("div", { style: centered() }, [
+      el("div", { class: "spinner" }),
+      el("div", { style: { color: "var(--color-text-secondary)" } }, "読み込み中…"),
+    ])
+  );
+}
+
+function showError(err) {
+  mount(
+    APP_ROOT(),
+    el("div", { style: centered() }, [
+      icon("cloud_off", { style: { fontSize: "48px", color: "var(--color-text-danger)" } }),
+      el("div", { style: { fontWeight: "600", fontSize: "1.1rem" } }, "共有DBに接続できませんでした"),
+      el("div", { style: { color: "var(--color-text-secondary)", maxWidth: "420px", textAlign: "center" } }, String(err.message || err)),
+      el("button", { class: "btn btn-primary", onclick: () => location.reload() }, [icon("refresh"), "再読み込み"]),
+    ])
+  );
+}
+
+function centered() {
+  return {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "14px",
+    padding: "24px",
+  };
+}
