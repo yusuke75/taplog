@@ -319,7 +319,7 @@
   font-weight: 700;
 }
 
-/* record list (記録一覧) */
+/* event history (イベント履歴) */
 .rec-row {
   display: flex;
   align-items: center;

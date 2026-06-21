@@ -1,4 +1,4 @@
-// Record list (記録一覧): history of events for a job, with edit/delete
+// Event history (イベント履歴): events for a job, with edit/delete
 // for correcting mis-records (要件 §4 イベント).
 
 import { el, icon, mount } from "../lib/dom.js";
@@ -25,7 +25,7 @@ export function renderRecords(params) {
   const product = products.get(job.productId);
 
   const { root, body } = workerShell({
-    title: "記録一覧",
+    title: "イベント履歴",
     onBack: () => Router.go(`/worker/job/${job.id}`),
   });
 
