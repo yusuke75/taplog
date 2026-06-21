@@ -26,7 +26,6 @@ create table if not exists app_users (
   id text primary key,
   employee_no text not null,
   name text not null,
-  card_code text,
   role text not null default 'worker',
   active boolean not null default true
 );
@@ -120,12 +119,12 @@ insert into products (id, code, name, standard_spm, standard_setup_min, active) 
   ('p5','E-3344','クリップE',200,10,true)
 on conflict (id) do nothing;
 
-insert into app_users (id, employee_no, name, card_code, role, active) values
-  ('u1','1001','山田 太郎','CARD-1001','worker',true),
-  ('u2','1002','佐藤 花子','CARD-1002','worker',true),
-  ('u3','1003','鈴木 一郎','CARD-1003','worker',true),
-  ('u4','9001','高橋 管理','CARD-9001','admin',true),
-  ('u5','9000','システム管理者','CARD-9000','sysadmin',true)
+insert into app_users (id, employee_no, name, role, active) values
+  ('u1','1001','山田 太郎','worker',true),
+  ('u2','1002','佐藤 花子','worker',true),
+  ('u3','1003','鈴木 一郎','worker',true),
+  ('u4','9001','高橋 管理','admin',true),
+  ('u5','9000','システム管理者','sysadmin',true)
 on conflict (id) do nothing;
 
 insert into defect_modes (id, name, sort_order, active) values
