@@ -44,10 +44,7 @@ function operatorBar() {
   const inner = el("div", { class: "operator-bar" }, [
     el("div", { class: "operator-chip" }, [
       el("span", { class: "operator-avatar" }, op ? op.name.slice(0, 1) : "?"),
-      el("span", {}, [
-        el("span", { style: { color: "var(--color-text-tertiary)", marginRight: "6px" } }, "ログイン中"),
-        el("strong", { style: { color: "var(--color-text-primary)" } }, op ? op.name : "未ログイン"),
-      ]),
+      el("strong", { style: { color: "var(--color-text-primary)" } }, op ? op.name : "未ログイン"),
     ]),
     el(
       "button",
