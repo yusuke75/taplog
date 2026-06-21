@@ -34,6 +34,25 @@
   gap: 8px;
 }
 
+.worker-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+}
+.worker-icon-btn:active {
+  background: var(--color-background-tertiary);
+}
+.worker-icon-btn .material-symbols-rounded {
+  font-size: 24px;
+}
+
 .worker-body {
   flex: 1;
   padding: 16px;

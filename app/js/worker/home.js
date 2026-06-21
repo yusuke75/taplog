@@ -16,7 +16,7 @@ export function renderHome() {
   clearViewTimers();
   if (!requireOperator()) return;
 
-  const { root, body } = workerShell({ title: "担当号機" });
+  const { root, body } = workerShell({ title: "担当号機", homeLink: true });
 
   // updaters refresh each card's dynamic text/badge in place every second
   const updaters = [];

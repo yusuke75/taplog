@@ -65,7 +65,7 @@ export function renderLogin() {
       setScanning(true);
       await startScan(video, canvas, (value) => {
         setScanning(false);
-        doLogin(value, false);
+        doLogin(value);
       });
     } catch (err) {
       setScanning(false);
@@ -85,7 +85,7 @@ export function renderLogin() {
     frame,
     scanBtn,
     el("div", { class: "login-divider" }, "または"),
-    el("button", { class: "worker-cta tonal", onclick: () => openManualLogin(false) }, [icon("keyboard"), "社員番号を手入力"]),
+    el("button", { class: "worker-cta tonal", onclick: () => openManualLogin() }, [icon("keyboard"), "社員番号を手入力"]),
     el("div", { style: { display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--color-text-secondary)", fontSize: "0.85rem", marginTop: "12px" } }, [
       icon("cloud_off", { style: { fontSize: "18px" } }),
       "オフラインでもログインできます",
@@ -111,18 +111,18 @@ function cameraErrorMessage(err) {
   return `カメラを起動できませんでした（${err && err.message ? err.message : "不明なエラー"}）。手入力をご利用ください。`;
 }
 
-function openManualLogin(isHandover) {
+function openManualLogin() {
   const input = el("input", { type: "text", inputmode: "numeric", placeholder: "例: 1001", autocomplete: "off" });
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") submit();
   });
 
   const submit = () => {
-    if (doLogin(input.value, isHandover)) close();
+    if (doLogin(input.value)) close();
   };
 
   const close = openModal({
-    title: isHandover ? "交代：社員番号を入力" : "社員番号でログイン",
+    title: "社員番号でログイン",
     body: [field("社員番号 または 社員証コード", input)],
     actions: [
       { label: "キャンセル", kind: "btn-ghost", onClick: (c) => c() },
@@ -131,8 +131,8 @@ function openManualLogin(isHandover) {
   });
 }
 
-/** Returns true on success. */
-function doLogin(code, isHandover) {
+/** Authenticate and log in. Returns true on success. */
+function doLogin(code) {
   const user = users.authenticate(code);
   if (!user) {
     toast("該当する作業者が見つかりません", "danger");
@@ -140,85 +140,6 @@ function doLogin(code, isHandover) {
   }
   session.login(user.id);
   toast(`${user.name} さんがログインしました`, "success");
-  if (!isHandover) Router.go("/worker");
-  else window.dispatchEvent(new CustomEvent("taplog:rerender")); // stay on current page
+  Router.go("/worker");
   return true;
-}
-
-/** 交代 (handover) — switch operator via scan or manual entry. */
-export function openHandover() {
-  openModal({
-    title: "記録者を交代",
-    body: [
-      el("p", { style: { margin: 0, color: "var(--color-text-secondary)" } }, "進行中のジョブはそのまま継続し、ログインだけ切り替えます。"),
-    ],
-    actions: [
-      { label: "閉じる", kind: "btn-ghost", onClick: (c) => c() },
-      {
-        label: "社員証をスキャン",
-        kind: "btn-tonal",
-        onClick: (c) => {
-          c();
-          openScanModal({ title: "交代：社員証をスキャン", onCode: (value) => doLogin(value, true) });
-        },
-      },
-      {
-        label: "手入力で交代",
-        kind: "btn-primary",
-        onClick: (c) => {
-          c();
-          openManualLogin(true);
-        },
-      },
-    ],
-  });
-}
-
-/**
- * Camera-scan modal usable anywhere (e.g. 交代). Streams the rear
- * camera; on the first decoded QR it closes and calls onCode(value).
- */
-function openScanModal({ title, onCode }) {
-  if (!isSupported()) {
-    toast("この端末ではカメラ読み取りを利用できません。手入力をご利用ください。", "danger");
-    openManualLogin(true);
-    return;
-  }
-
-  const video = el("video", { class: "qr-video", playsinline: "", muted: "" });
-  const canvas = el("canvas", { style: { display: "none" } });
-  const frame = el("div", { class: "qr-frame scanning", style: { margin: "0 auto" } }, [
-    video,
-    canvas,
-    corner("tl"),
-    corner("tr"),
-    corner("bl"),
-    corner("br"),
-  ]);
-  const hint = el("p", { style: { textAlign: "center", color: "var(--color-text-secondary)", margin: "10px 0 0" } }, "社員証のQRコードを枠内にかざしてください");
-
-  const close = openModal({
-    title,
-    body: [frame, hint],
-    actions: [
-      { label: "閉じる", kind: "btn-ghost", onClick: (c) => c() },
-      {
-        label: "手入力",
-        kind: "btn-tonal",
-        onClick: (c) => {
-          c();
-          openManualLogin(true);
-        },
-      },
-    ],
-    onClose: () => stopScan(),
-  });
-
-  startScan(video, canvas, (value) => {
-    close();
-    onCode(value);
-  }).catch((err) => {
-    hint.textContent = cameraErrorMessage(err);
-    hint.style.color = "var(--color-text-danger)";
-  });
 }

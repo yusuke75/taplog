@@ -1,27 +1,34 @@
-// Worker shell: topbar (title + network) and an operator bar with
-// the always-visible "現在ログイン中" + 交代 button (要件 §7).
+// Worker shell: topbar (title + network + optional home link) and an
+// operator bar with the always-visible "現在ログイン中" + ログアウト button.
 
 import { el, icon, mount } from "../lib/dom.js";
 import { networkPill, toast } from "../lib/ui.js";
 import { session } from "../data/store.js";
 import { Router } from "../lib/router.js";
-import { openHandover } from "./login.js";
 
 /**
  * Build the worker page frame.
  *   title: header text (string or node)
  *   onBack: optional handler -> shows back chevron instead of title icon
- *   showOperator: render the operator/交代 bar (default true)
+ *   showOperator: render the operator/ログアウト bar (default true)
+ *   homeLink: show a home icon that returns to the top page "/"
  * Returns { root, body } — append content to `body`.
  */
-export function workerShell({ title, onBack = null, showOperator = true }) {
+export function workerShell({ title, onBack = null, showOperator = true, homeLink = false }) {
   const body = el("div", { class: "worker-body" });
 
   const titleNode = onBack
     ? el("button", { class: "worker-back", onclick: onBack }, [icon("arrow_back"), title])
     : el("span", { class: "worker-title" }, [icon("touch_app"), title]);
 
-  const topbar = el("div", { class: "worker-topbar" }, [titleNode, networkPill()]);
+  const right = el("div", { style: { display: "flex", alignItems: "center", gap: "10px" } }, [
+    homeLink
+      ? el("button", { class: "worker-icon-btn", title: "トップページへ", onclick: () => Router.go("/") }, icon("home"))
+      : null,
+    networkPill(),
+  ]);
+
+  const topbar = el("div", { class: "worker-topbar" }, [titleNode, right]);
 
   const root = el("div", { class: "worker" }, [topbar]);
 
@@ -46,14 +53,21 @@ function operatorBar() {
       "button",
       {
         class: "handover-btn",
-        onclick: () => openHandover(),
+        onclick: () => logout(),
       },
-      [icon("sync_alt"), "交代"]
+      [icon("logout"), "ログアウト"]
     ),
   ]);
 
   mount(bar, inner);
   return bar;
+}
+
+function logout() {
+  const op = session.current();
+  session.logout();
+  toast(op ? `${op.name} さんがログアウトしました` : "ログアウトしました", "success");
+  Router.go("/worker/login");
 }
 
 /** Guard: redirect to login if no operator is logged in. */
