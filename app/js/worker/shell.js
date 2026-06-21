@@ -39,7 +39,7 @@ export function workerShell({ title, onBack = null, showOperator = true, homeLin
 
 function operatorBar() {
   const op = session.current();
-  const bar = el("div", { class: "worker-body", style: { paddingBottom: "0" } });
+  const bar = el("div", { class: "worker-body", style: { paddingBottom: "0", flex: "0 0 auto" } });
 
   const inner = el("div", { class: "operator-bar" }, [
     el("div", { class: "operator-chip" }, [

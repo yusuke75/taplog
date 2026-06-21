@@ -48,6 +48,11 @@ export function renderRecord(params) {
 
   // CTAs
   body.append(
+    el(
+      "button",
+      { class: "worker-cta tonal", onclick: () => Router.go(`/worker/job/${job.id}/records`) },
+      [icon("history"), "記録一覧"]
+    ),
     el("button", { class: "worker-cta", onclick: () => Router.go(`/worker/job/${job.id}/result`) }, [
       "生産実績を入力",
       icon("arrow_forward"),

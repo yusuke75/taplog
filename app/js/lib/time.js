@@ -51,3 +51,17 @@ export function dateStr(ms) {
 export function dateTimeStr(ms) {
   return `${dateStr(ms)} ${timeOfDay(ms)}`;
 }
+
+/** epoch ms -> "YYYY-MM-DDTHH:MM" for <input type="datetime-local">. */
+export function toDatetimeLocal(ms) {
+  const d = new Date(ms);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+/** "YYYY-MM-DDTHH:MM" (local) -> epoch ms, or null if invalid/empty. */
+export function fromDatetimeLocal(str) {
+  if (!str) return null;
+  const t = new Date(str).getTime();
+  return Number.isFinite(t) ? t : null;
+}

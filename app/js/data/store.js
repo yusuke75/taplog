@@ -407,6 +407,22 @@ export const jobs = {
     if (!job) return null;
     return job.events.find((e) => e.endedAt == null) || null;
   },
+
+  /** Edit a recorded event (type / times) — for correcting mis-records. */
+  updateEvent(jobId, eventId, patch) {
+    const job = jobs.get(jobId);
+    if (!job) return;
+    const events = job.events.map((e) => (e.id === eventId ? { ...e, ...patch } : e));
+    const updated = events.find((e) => e.id === eventId);
+    commitJob(jobId, { events }, updated ? [makeUpsert("events", updated)] : []);
+  },
+
+  /** Delete a mis-recorded event. */
+  deleteEvent(jobId, eventId) {
+    const job = jobs.get(jobId);
+    if (!job) return;
+    commitJob(jobId, { events: job.events.filter((e) => e.id !== eventId) }, [makeDelete("events", eventId)]);
+  },
 };
 
 /** Patch a single job in cache immutably and send the given ops. */
