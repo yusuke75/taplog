@@ -1,5 +1,5 @@
 // Worker shell: topbar (title + network + optional home link) and an
-// operator bar with the always-visible "現在ログイン中" + ログアウト button.
+// operator bar showing the current operator's name + ログアウト button.
 
 import { el, icon, mount } from "../lib/dom.js";
 import { networkPill, toast } from "../lib/ui.js";
