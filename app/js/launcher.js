@@ -34,7 +34,7 @@ export function renderLauncher() {
     ]),
     el("p", { style: { textAlign: "center", color: "var(--color-text-secondary)", margin: "4px 0 36px" } }, "製造日報デジタル化 — タップで記録"),
     el("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" } }, [
-      card("smartphone", "作業者（スマホ）", "現場で記録。号機カード・イベント記録・生産実績入力。", () => Router.go("/worker"), true),
+      card("smartphone", "作業者（スマホ）", "現場で記録。設備カード・イベント記録・生産実績入力。", () => Router.go("/worker"), true),
       card("desktop_windows", "管理者（PC）", "マスタ管理・集計・分析・ジョブ閲覧・CSV出力。", () => Router.go("/admin")),
     ]),
     el(

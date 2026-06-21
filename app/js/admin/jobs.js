@@ -39,7 +39,7 @@ export function renderJobs() {
 
 function table(list) {
   const head = el("tr", {}, [
-    el("th", {}, "号機"),
+    el("th", {}, "設備"),
     el("th", {}, "品番"),
     el("th", {}, "ロット"),
     el("th", {}, "開始"),

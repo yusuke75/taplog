@@ -1,4 +1,4 @@
-// New job (要件 §7): pick 号機 + 品番 -> SPM auto-shows -> 開始.
+// New job (要件 §7): pick 設備 + 品番 -> SPM auto-shows -> 開始.
 
 import { el, icon, mount } from "../lib/dom.js";
 import { machines, products, jobs, session } from "../data/store.js";
@@ -21,10 +21,10 @@ export function renderJobNew(params = {}) {
   const fixedMachine = params.machine ? machines.get(params.machine) : null;
   const state = { machineId: fixedMachine ? fixedMachine.id : "", productId: "", lot: "" };
 
-  // --- 号機: fixed display or selector ---
+  // --- 設備: fixed display or selector ---
   const machineField = fixedMachine
     ? el("div", { class: "field" }, [
-        el("span", { class: "field-label" }, "号機"),
+        el("span", { class: "field-label" }, "設備"),
         el(
           "div",
           {
@@ -44,8 +44,8 @@ export function renderJobNew(params = {}) {
         ),
       ])
     : selectField(
-        "号機を選択",
-        machines.active().map((m) => ({ value: m.id, label: m.name })),
+        "設備を選択",
+        groupMachines().map((m) => ({ value: m.id, label: m.name })),
         "",
         (v) => (state.machineId = v)
       );
@@ -94,11 +94,11 @@ export function renderJobNew(params = {}) {
 }
 
 function start(state) {
-  if (!state.machineId) return toast("号機を選択してください", "danger");
+  if (!state.machineId) return toast("設備を選択してください", "danger");
   if (!state.productId) return toast("品番を選択してください", "danger");
 
   const existing = jobs.forMachine(state.machineId);
-  if (existing) return toast("この号機には進行中のジョブがあります", "danger");
+  if (existing) return toast("この設備には進行中のジョブがあります", "danger");
 
   const op = session.current();
   const job = jobs.start({
@@ -109,6 +109,13 @@ function start(state) {
   });
   toast("ジョブを開始しました", "success");
   Router.go(`/worker/job/${job.id}`);
+}
+
+/** Active equipment limited to the current operator's group (if any). */
+function groupMachines() {
+  const op = session.current();
+  const list = machines.active();
+  return op && op.groupId ? list.filter((m) => m.groupId === op.groupId) : list;
 }
 
 function selectField(label, options, value, onChange) {

@@ -30,7 +30,14 @@ const TABLE = {
 
 // ---- row mappers (DB row -> cache object) ----
 const FROM_DB = {
-  machines: (r) => ({ id: r.id, name: r.name, active: r.active, sortOrder: r.sort_order }),
+  machines: (r) => ({
+    id: r.id,
+    name: r.name,
+    groupId: r.group_id || "",
+    groupName: r.group_name || "",
+    active: r.active,
+    sortOrder: r.sort_order,
+  }),
   products: (r) => ({
     id: r.id,
     code: r.code,
@@ -43,6 +50,8 @@ const FROM_DB = {
     id: r.id,
     employeeNo: r.employee_no,
     name: r.name,
+    groupId: r.group_id || "",
+    groupName: r.group_name || "",
     role: r.role,
     active: r.active,
   }),
@@ -73,7 +82,14 @@ const FROM_DB = {
 
 // ---- row mappers (cache object -> DB row) ----
 const TO_DB = {
-  machines: (m) => ({ id: m.id, name: m.name, active: m.active, sort_order: m.sortOrder ?? 0 }),
+  machines: (m) => ({
+    id: m.id,
+    name: m.name,
+    group_id: m.groupId || null,
+    group_name: m.groupName || null,
+    active: m.active,
+    sort_order: m.sortOrder ?? 0,
+  }),
   products: (p) => ({
     id: p.id,
     code: p.code,
@@ -86,6 +102,8 @@ const TO_DB = {
     id: u.id,
     employee_no: u.employeeNo,
     name: u.name,
+    group_id: u.groupId || null,
+    group_name: u.groupName || null,
     role: u.role,
     active: u.active,
   }),

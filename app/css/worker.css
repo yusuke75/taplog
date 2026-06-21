@@ -107,6 +107,23 @@
   cursor: pointer;
 }
 
+/* group chip (operator's group on home) */
+.group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-info);
+  background: var(--color-background-info);
+  padding: 5px 12px;
+  border-radius: var(--border-radius-pill);
+}
+.group-chip .material-symbols-rounded {
+  font-size: 18px;
+}
+
 /* machine cards */
 .machine-card {
   display: flex;

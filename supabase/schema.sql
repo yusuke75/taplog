@@ -8,6 +8,8 @@
 create table if not exists machines (
   id text primary key,
   name text not null,
+  group_id text,
+  group_name text,
   active boolean not null default true,
   sort_order int not null default 0
 );
@@ -26,6 +28,8 @@ create table if not exists app_users (
   id text primary key,
   employee_no text not null,
   name text not null,
+  group_id text,
+  group_name text,
   role text not null default 'worker',
   active boolean not null default true
 );
@@ -105,10 +109,10 @@ end $$;
 -- ============================================================
 -- 初期マスタ（既にあれば上書きしない）
 -- ============================================================
-insert into machines (id, name, active, sort_order) values
-  ('m1','1号機',true,1),('m2','2号機',true,2),('m3','3号機',true,3),
-  ('m4','4号機',true,4),('m5','5号機',true,5),('m6','6号機',true,6),
-  ('m7','7号機',true,7),('m8','8号機',true,8),('m9','9号機',false,9)
+insert into machines (id, name, group_id, group_name, active, sort_order) values
+  ('m1','設備1','A','プレスA班',true,1),('m2','設備2','A','プレスA班',true,2),('m3','設備3','A','プレスA班',true,3),
+  ('m4','設備4','B','プレスB班',true,4),('m5','設備5','B','プレスB班',true,5),('m6','設備6','B','プレスB班',true,6),
+  ('m7','設備7','C','プレスC班',true,7),('m8','設備8','C','プレスC班',true,8),('m9','設備9','C','プレスC班',false,9)
 on conflict (id) do nothing;
 
 insert into products (id, code, name, standard_spm, standard_setup_min, active) values
@@ -119,12 +123,12 @@ insert into products (id, code, name, standard_spm, standard_setup_min, active) 
   ('p5','E-3344','クリップE',200,10,true)
 on conflict (id) do nothing;
 
-insert into app_users (id, employee_no, name, role, active) values
-  ('u1','1001','山田 太郎','worker',true),
-  ('u2','1002','佐藤 花子','worker',true),
-  ('u3','1003','鈴木 一郎','worker',true),
-  ('u4','9001','高橋 管理','admin',true),
-  ('u5','9000','システム管理者','sysadmin',true)
+insert into app_users (id, employee_no, name, group_id, group_name, role, active) values
+  ('u1','1001','山田 太郎','A','プレスA班','worker',true),
+  ('u2','1002','佐藤 花子','B','プレスB班','worker',true),
+  ('u3','1003','鈴木 一郎','B','プレスB班','worker',true),
+  ('u4','9001','高橋 管理',null,null,'admin',true),
+  ('u5','9000','システム管理者',null,null,'sysadmin',true)
 on conflict (id) do nothing;
 
 insert into defect_modes (id, name, sort_order, active) values

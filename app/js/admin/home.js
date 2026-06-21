@@ -51,7 +51,7 @@ function kpiGrid(todays) {
     ]);
 
   return el("div", { class: "kpi-grid" }, [
-    kpi("本日の稼働率", `${util}%`, "全号機平均", "speed"),
+    kpi("本日の稼働率", `${util}%`, "全設備平均", "speed"),
     kpi("平均段取り", `${setup}分`, "本日のジョブ平均", "build"),
     kpi("本日の不良率", `${dRate}%`, `不良 ${totDef} / 生産 ${totProd.toLocaleString()}`, "report"),
     kpi("本日のジョブ", `${todays.length}件`, "開始/終了ベース", "receipt_long"),
@@ -78,7 +78,7 @@ function tileGrid() {
 
   return el("div", { class: "tile-grid" }, [
     tile("#/admin/masters/products", "inventory_2", "品番マスタ", `${products.list().length} 件`),
-    tile("#/admin/masters/machines", "precision_manufacturing", "号機マスタ", `${machines.list().length} 台`),
+    tile("#/admin/masters/machines", "precision_manufacturing", "設備マスタ", `${machines.list().length} 台`),
     tile("#/admin/masters/users", "group", "ユーザー", `${users.list().length} 名`),
     tile("#/admin/masters/defects", "report", "不良モード", `${defectModes.active().length} 種（有効）`),
   ]);

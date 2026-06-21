@@ -10,7 +10,7 @@ const NAV = [
     group: "マスタ管理",
     items: [
       { href: "#/admin/masters/products", icon: "inventory_2", label: "品番マスタ", match: "/admin/masters/products" },
-      { href: "#/admin/masters/machines", icon: "precision_manufacturing", label: "号機マスタ", match: "/admin/masters/machines" },
+      { href: "#/admin/masters/machines", icon: "precision_manufacturing", label: "設備マスタ", match: "/admin/masters/machines" },
       { href: "#/admin/masters/users", icon: "group", label: "ユーザー", match: "/admin/masters/users" },
       { href: "#/admin/masters/defects", icon: "report", label: "不良モード", match: "/admin/masters/defects" },
     ],

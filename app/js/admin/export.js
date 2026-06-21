@@ -14,7 +14,7 @@ function csvCell(value) {
 export function buildCsv() {
   const modes = defectModes.list();
   const header = [
-    "号機",
+    "設備",
     "品番",
     "品番名",
     "ロット",

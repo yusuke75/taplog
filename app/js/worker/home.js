@@ -2,7 +2,7 @@
 // jobs, plus a big "新規ジョブ開始" CTA. Cards update live (elapsed time).
 
 import { el, icon, mount } from "../lib/dom.js";
-import { machines, products, jobs } from "../data/store.js";
+import { machines, products, jobs, session } from "../data/store.js";
 import { Router } from "../lib/router.js";
 import { eventLabel } from "../domain/events.js";
 import { elapsed, clock, eventDurationMs } from "../lib/time.js";
@@ -16,14 +16,26 @@ export function renderHome() {
   clearViewTimers();
   if (!requireOperator()) return;
 
-  const { root, body } = workerShell({ title: "担当号機", homeLink: true });
+  const { root, body } = workerShell({ title: "担当設備", homeLink: true });
 
   // updaters refresh each card's dynamic text/badge in place every second
   const updaters = [];
 
-  const list = machines.active();
+  // Show only equipment in the operator's group (要件). Operators with no
+  // group (e.g. admins) see all equipment.
+  const op = session.current();
+  const list = op && op.groupId
+    ? machines.active().filter((m) => m.groupId === op.groupId)
+    : machines.active();
+
+  if (op && op.groupName) {
+    body.append(
+      el("div", { class: "group-chip" }, [icon("groups"), op.groupName])
+    );
+  }
+
   if (list.length === 0) {
-    body.append(emptyState());
+    body.append(emptyState(!!(op && op.groupId)));
   } else {
     list.forEach((m) => body.append(machineCard(m, updaters)));
   }
@@ -89,10 +101,14 @@ function machineCard(machine, updaters) {
   ]);
 }
 
-function emptyState() {
+function emptyState(grouped) {
   return el("div", { class: "empty" }, [
     icon("precision_manufacturing"),
-    el("div", {}, "有効な号機がありません"),
-    el("div", { style: { fontSize: "0.85rem", marginTop: "4px" } }, "管理者に号機マスタの登録を依頼してください"),
+    el("div", {}, grouped ? "担当グループの設備がありません" : "有効な設備がありません"),
+    el(
+      "div",
+      { style: { fontSize: "0.85rem", marginTop: "4px" } },
+      grouped ? "管理者にグループ・設備の割り当てを確認してください" : "管理者に設備マスタの登録を依頼してください"
+    ),
   ]);
 }

@@ -1,5 +1,5 @@
 // Master management (要件 §8): add/edit/delete + active toggle for
-// 品番 / 号機 / ユーザー / 不良モード. Config-driven so the four
+// 品番 / 設備 / ユーザー / 不良モード. Config-driven so the four
 // masters share one table/dialog implementation.
 
 import { el, icon, mount } from "../lib/dom.js";
@@ -28,10 +28,18 @@ const CONFIGS = {
     ],
   },
   machines: {
-    title: "号機マスタ",
+    title: "設備マスタ",
     store: machines,
-    columns: [{ key: "name", label: "号機名", weight: 1 }],
-    fields: [{ key: "name", label: "号機名", type: "text", required: true }],
+    columns: [
+      { key: "name", label: "設備名", weight: 1 },
+      { key: "groupId", label: "グループID", render: (r) => r.groupId || "—" },
+      { key: "groupName", label: "グループ名", weight: 1, render: (r) => r.groupName || "—" },
+    ],
+    fields: [
+      { key: "name", label: "設備名", type: "text", required: true },
+      { key: "groupId", label: "グループID", type: "text" },
+      { key: "groupName", label: "グループ名", type: "text" },
+    ],
   },
   users: {
     title: "ユーザー（作業者）マスタ",
@@ -39,11 +47,15 @@ const CONFIGS = {
     columns: [
       { key: "employeeNo", label: "社員ID", weight: 1 },
       { key: "name", label: "氏名", weight: 1 },
+      { key: "groupId", label: "グループID", render: (r) => r.groupId || "—" },
+      { key: "groupName", label: "グループ名", weight: 1, render: (r) => r.groupName || "—" },
       { key: "role", label: "ロール", render: (r) => ROLE_LABELS[r.role] || r.role },
     ],
     fields: [
       { key: "employeeNo", label: "社員ID", type: "text", required: true },
       { key: "name", label: "氏名", type: "text", required: true },
+      { key: "groupId", label: "グループID", type: "text" },
+      { key: "groupName", label: "グループ名", type: "text" },
       {
         key: "role",
         label: "ロール",

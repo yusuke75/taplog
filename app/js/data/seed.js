@@ -11,15 +11,15 @@ export function buildSeed() {
   const minutesAgo = (m) => t - m * 60_000;
 
   const machines = [
-    { id: "m1", name: "1号機", active: true },
-    { id: "m2", name: "2号機", active: true },
-    { id: "m3", name: "3号機", active: true },
-    { id: "m4", name: "4号機", active: true },
-    { id: "m5", name: "5号機", active: true },
-    { id: "m6", name: "6号機", active: true },
-    { id: "m7", name: "7号機", active: true },
-    { id: "m8", name: "8号機", active: true },
-    { id: "m9", name: "9号機", active: false },
+    { id: "m1", name: "設備1", groupId: "A", groupName: "プレスA班", active: true },
+    { id: "m2", name: "設備2", groupId: "A", groupName: "プレスA班", active: true },
+    { id: "m3", name: "設備3", groupId: "A", groupName: "プレスA班", active: true },
+    { id: "m4", name: "設備4", groupId: "B", groupName: "プレスB班", active: true },
+    { id: "m5", name: "設備5", groupId: "B", groupName: "プレスB班", active: true },
+    { id: "m6", name: "設備6", groupId: "B", groupName: "プレスB班", active: true },
+    { id: "m7", name: "設備7", groupId: "C", groupName: "プレスC班", active: true },
+    { id: "m8", name: "設備8", groupId: "C", groupName: "プレスC班", active: true },
+    { id: "m9", name: "設備9", groupId: "C", groupName: "プレスC班", active: false },
   ];
 
   // 品番マスタ：標準SPM・標準段取り時間（分）を保持（要件 §4）
@@ -33,11 +33,11 @@ export function buildSeed() {
 
   // ユーザーマスタ：ロールは sysadmin / admin / worker（要件 §2）
   const users = [
-    { id: "u1", employeeNo: "1001", name: "山田 太郎", role: "worker", active: true },
-    { id: "u2", employeeNo: "1002", name: "佐藤 花子", role: "worker", active: true },
-    { id: "u3", employeeNo: "1003", name: "鈴木 一郎", role: "worker", active: true },
-    { id: "u4", employeeNo: "9001", name: "高橋 管理", role: "admin", active: true },
-    { id: "u5", employeeNo: "9000", name: "システム管理者", role: "sysadmin", active: true },
+    { id: "u1", employeeNo: "1001", name: "山田 太郎", groupId: "A", groupName: "プレスA班", role: "worker", active: true },
+    { id: "u2", employeeNo: "1002", name: "佐藤 花子", groupId: "B", groupName: "プレスB班", role: "worker", active: true },
+    { id: "u3", employeeNo: "1003", name: "鈴木 一郎", groupId: "B", groupName: "プレスB班", role: "worker", active: true },
+    { id: "u4", employeeNo: "9001", name: "高橋 管理", groupId: "", groupName: "", role: "admin", active: true },
+    { id: "u5", employeeNo: "9000", name: "システム管理者", groupId: "", groupName: "", role: "sysadmin", active: true },
   ];
 
   // 不良モードマスタ：初期値 巻き/寸法/外観/その他（要件 §4）

@@ -1,4 +1,4 @@
-// Dashboard (要件 §8): primary KPIs 号機別稼働率 / 品番別稼働率,
+// Dashboard (要件 §8): primary KPIs 設備別稼働率 / 品番別稼働率,
 // auxiliary 全体稼働率・平均段取り・不良率・総ショット数, period switch.
 
 import { el, icon, mount } from "../lib/dom.js";
@@ -28,7 +28,7 @@ function draw(main) {
     adminHeader("ダッシュボード", periodTabs(main)),
     auxKpis(list),
     el("div", { class: "two-col" }, [
-      panel("号機別 稼働率", machineUtilChart(list)),
+      panel("設備別 稼働率", machineUtilChart(list)),
       panel("品番別 稼働率", productUtilChart(list)),
     ])
   );
