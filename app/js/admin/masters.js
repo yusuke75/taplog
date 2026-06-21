@@ -37,13 +37,13 @@ const CONFIGS = {
     title: "ユーザー（作業者）マスタ",
     store: users,
     columns: [
-      { key: "employeeNo", label: "社員番号", weight: 1 },
+      { key: "employeeNo", label: "社員ID", weight: 1 },
       { key: "name", label: "氏名", weight: 1 },
       { key: "cardCode", label: "社員IDコード", weight: 1 },
       { key: "role", label: "ロール", render: (r) => ROLE_LABELS[r.role] || r.role },
     ],
     fields: [
-      { key: "employeeNo", label: "社員番号", type: "text", required: true },
+      { key: "employeeNo", label: "社員ID", type: "text", required: true },
       { key: "name", label: "氏名", type: "text", required: true },
       { key: "cardCode", label: "社員IDコード", type: "text" },
       {

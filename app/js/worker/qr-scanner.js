@@ -1,7 +1,7 @@
 // ============================================================
 // Camera QR scanner (要件 §7). Uses the vendored jsQR (offline-
 // capable, loaded as window.jsQR via a <script> tag). Decodes the
-// rear-camera video stream and returns the QR text (= 社員番号).
+// rear-camera video stream and returns the QR text (= 社員ID).
 //
 // Requires a secure context (HTTPS or localhost) for camera access.
 // ============================================================

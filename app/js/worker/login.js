@@ -1,4 +1,4 @@
-// Worker login (要件 §7): camera QR scan (社員ID = 社員番号) OR manual
+// Worker login (要件 §7): camera QR scan (社員ID = 社員ID) OR manual
 // employee-number entry. Works offline. Also exposes the 交代
 // (handover) flow that switches the logged-in operator.
 
@@ -85,7 +85,7 @@ export function renderLogin() {
     frame,
     scanBtn,
     el("div", { class: "login-divider" }, "または"),
-    el("button", { class: "worker-cta tonal", onclick: () => openManualLogin() }, [icon("keyboard"), "社員番号を手入力"]),
+    el("button", { class: "worker-cta tonal", onclick: () => openManualLogin() }, [icon("keyboard"), "社員IDを手入力"]),
     el("div", { style: { display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--color-text-secondary)", fontSize: "0.85rem", marginTop: "12px" } }, [
       icon("cloud_off", { style: { fontSize: "18px" } }),
       "オフラインでもログインできます",
@@ -122,8 +122,8 @@ function openManualLogin() {
   };
 
   const close = openModal({
-    title: "社員番号でログイン",
-    body: [field("社員番号 または 社員IDコード", input)],
+    title: "社員IDでログイン",
+    body: [field("社員ID", input)],
     actions: [
       { label: "キャンセル", kind: "btn-ghost", onClick: (c) => c() },
       { label: "ログイン", kind: "btn-primary", onClick: submit },
