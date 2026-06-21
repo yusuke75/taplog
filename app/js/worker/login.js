@@ -1,4 +1,4 @@
-// Worker login (要件 §7): camera QR scan (社員証 = 社員番号) OR manual
+// Worker login (要件 §7): camera QR scan (社員ID = 社員番号) OR manual
 // employee-number entry. Works offline. Also exposes the 交代
 // (handover) flow that switches the logged-in operator.
 
@@ -48,7 +48,7 @@ export function renderLogin() {
     placeholder.style.display = on ? "none" : "";
     video.style.display = on ? "" : "none";
     mount(scanBtn, on ? icon("stop") : icon("qr_code_scanner"), on ? "停止" : "カメラでスキャン");
-    hint.textContent = on ? "社員証のQRコードを枠内にかざしてください" : "「カメラでスキャン」で社員証を読み取ります";
+    hint.textContent = on ? "社員IDのQRコードを枠内にかざしてください" : "「カメラでスキャン」で社員IDを読み取ります";
   };
 
   scanBtn.addEventListener("click", async () => {
@@ -80,7 +80,7 @@ export function renderLogin() {
 
   wrap.append(
     el("p", { style: { color: "var(--color-text-secondary)", fontSize: "0.95rem", margin: "0" } }, "TapLog ・ プレス日報"),
-    el("h2", { style: { fontSize: "1.4rem", fontWeight: "600", margin: "8px 0 4px" } }, "社員証をスキャン"),
+    el("h2", { style: { fontSize: "1.4rem", fontWeight: "600", margin: "8px 0 4px" } }, "社員IDをスキャン"),
     hint,
     frame,
     scanBtn,
@@ -123,7 +123,7 @@ function openManualLogin() {
 
   const close = openModal({
     title: "社員番号でログイン",
-    body: [field("社員番号 または 社員証コード", input)],
+    body: [field("社員番号 または 社員IDコード", input)],
     actions: [
       { label: "キャンセル", kind: "btn-ghost", onClick: (c) => c() },
       { label: "ログイン", kind: "btn-primary", onClick: submit },
