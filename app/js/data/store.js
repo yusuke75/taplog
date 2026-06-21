@@ -298,7 +298,7 @@ export const users = {
   authenticate: (code) => {
     const key = String(code || "").trim();
     if (!key) return null;
-    return cache.users.find((u) => u.active && (u.cardCode === key || u.employeeNo === key)) || null;
+    return cache.users.find((u) => u.active && u.employeeNo === key) || null;
   },
 };
 

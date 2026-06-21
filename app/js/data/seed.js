@@ -33,11 +33,11 @@ export function buildSeed() {
 
   // ユーザーマスタ：ロールは sysadmin / admin / worker（要件 §2）
   const users = [
-    { id: "u1", employeeNo: "1001", name: "山田 太郎", cardCode: "CARD-1001", role: "worker", active: true },
-    { id: "u2", employeeNo: "1002", name: "佐藤 花子", cardCode: "CARD-1002", role: "worker", active: true },
-    { id: "u3", employeeNo: "1003", name: "鈴木 一郎", cardCode: "CARD-1003", role: "worker", active: true },
-    { id: "u4", employeeNo: "9001", name: "高橋 管理", cardCode: "CARD-9001", role: "admin", active: true },
-    { id: "u5", employeeNo: "9000", name: "システム管理者", cardCode: "CARD-9000", role: "sysadmin", active: true },
+    { id: "u1", employeeNo: "1001", name: "山田 太郎", role: "worker", active: true },
+    { id: "u2", employeeNo: "1002", name: "佐藤 花子", role: "worker", active: true },
+    { id: "u3", employeeNo: "1003", name: "鈴木 一郎", role: "worker", active: true },
+    { id: "u4", employeeNo: "9001", name: "高橋 管理", role: "admin", active: true },
+    { id: "u5", employeeNo: "9000", name: "システム管理者", role: "sysadmin", active: true },
   ];
 
   // 不良モードマスタ：初期値 巻き/寸法/外観/その他（要件 §4）
