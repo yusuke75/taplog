@@ -2,7 +2,7 @@
 // and analytics.
 
 import { el, icon } from "../lib/dom.js";
-import { machines, products, users, defectModes, jobs } from "../data/store.js";
+import { machines, products, users, defectModes, productMachines, jobs } from "../data/store.js";
 import { dateStr } from "../lib/time.js";
 import { now } from "../lib/id.js";
 import { utilization, defectRate, totalDefects, setupMinutes } from "../domain/calc.js";
@@ -81,5 +81,6 @@ function tileGrid() {
     tile("#/admin/masters/machines", "precision_manufacturing", "設備マスタ", `${machines.list().length} 台`),
     tile("#/admin/masters/users", "group", "ユーザー", `${users.list().length} 名`),
     tile("#/admin/masters/defects", "report", "不良モード", `${defectModes.active().length} 種（有効）`),
+    tile("#/admin/product-machines", "link", "品番×設備 対応", `${productMachines.list().length} 件`),
   ]);
 }

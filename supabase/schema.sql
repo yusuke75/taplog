@@ -41,6 +41,14 @@ create table if not exists defect_modes (
   active boolean not null default true
 );
 
+-- 品番×設備 対応マスタ（多対多）
+create table if not exists product_machines (
+  id text primary key,
+  product_id text,
+  machine_id text
+);
+create index if not exists idx_pm_machine on product_machines(machine_id);
+
 create table if not exists jobs (
   id text primary key,
   machine_id text,
@@ -73,17 +81,18 @@ create index if not exists idx_jobs_status on jobs(status);
 --   ※ URL と anon キーを知っていれば誰でも読み書きできます。
 --     本格運用で権限を絞る場合はこのポリシーを見直してください。
 -- ============================================================
-alter table machines     enable row level security;
-alter table products     enable row level security;
-alter table app_users    enable row level security;
-alter table defect_modes enable row level security;
-alter table jobs         enable row level security;
-alter table events       enable row level security;
+alter table machines         enable row level security;
+alter table products         enable row level security;
+alter table app_users        enable row level security;
+alter table defect_modes     enable row level security;
+alter table product_machines enable row level security;
+alter table jobs             enable row level security;
+alter table events           enable row level security;
 
 do $$
 declare t text;
 begin
-  foreach t in array array['machines','products','app_users','defect_modes','jobs','events']
+  foreach t in array array['machines','products','app_users','defect_modes','product_machines','jobs','events']
   loop
     execute format('drop policy if exists "taplog_all" on %I', t);
     execute format(
@@ -97,7 +106,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['machines','products','app_users','defect_modes','jobs','events']
+  foreach t in array array['machines','products','app_users','defect_modes','product_machines','jobs','events']
   loop
     begin
       execute format('alter publication supabase_realtime add table %I', t);
@@ -135,4 +144,9 @@ insert into defect_modes (id, name, sort_order, active) values
   ('d1','巻き不良',1,true),('d2','寸法不良',2,true),
   ('d3','外観不良',3,true),('d4','その他',4,true),
   ('d5','バリ不良',5,false)
+on conflict (id) do nothing;
+
+insert into product_machines (id, product_id, machine_id) values
+  ('pm1','p1','m1'),('pm2','p2','m1'),('pm3','p1','m2'),
+  ('pm4','p3','m2'),('pm5','p4','m4'),('pm6','p5','m5')
 on conflict (id) do nothing;

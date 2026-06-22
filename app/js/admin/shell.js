@@ -13,6 +13,7 @@ const NAV = [
       { href: "#/admin/masters/machines", icon: "precision_manufacturing", label: "設備マスタ", match: "/admin/masters/machines" },
       { href: "#/admin/masters/users", icon: "group", label: "ユーザー", match: "/admin/masters/users" },
       { href: "#/admin/masters/defects", icon: "report", label: "不良モード", match: "/admin/masters/defects" },
+      { href: "#/admin/product-machines", icon: "link", label: "品番×設備 対応", match: "/admin/product-machines" },
     ],
   },
   {

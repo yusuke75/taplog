@@ -49,6 +49,16 @@ export function buildSeed() {
     { id: "d5", name: "バリ不良", order: 5, active: false },
   ];
 
+  // 品番×設備 対応マスタ（どの品番がどの設備で生産できるか）
+  const productMachines = [
+    { id: "pm1", productId: "p1", machineId: "m1" },
+    { id: "pm2", productId: "p2", machineId: "m1" },
+    { id: "pm3", productId: "p1", machineId: "m2" },
+    { id: "pm4", productId: "p3", machineId: "m2" },
+    { id: "pm5", productId: "p4", machineId: "m4" },
+    { id: "pm6", productId: "p5", machineId: "m5" },
+  ];
+
   // --- Demo jobs (ジョブ＝紙1枚) ---
   const jobs = [
     {
@@ -117,6 +127,7 @@ export function buildSeed() {
     products,
     users,
     defectModes,
+    productMachines,
     jobs,
     session: { operatorId: null },
   };

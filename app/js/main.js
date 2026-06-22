@@ -15,6 +15,7 @@ import { renderRecords } from "./worker/records.js";
 import { renderResult } from "./worker/result.js";
 import { renderAdminHome } from "./admin/home.js";
 import { renderMasters } from "./admin/masters.js";
+import { renderProductMachines } from "./admin/product-machines.js";
 import { renderDashboard } from "./admin/dashboard.js";
 import { renderJobs, renderJobDetail } from "./admin/jobs.js";
 
@@ -31,6 +32,7 @@ router
   .on("/worker/job/:id/result", renderResult)
   .on("/admin", renderAdminHome)
   .on("/admin/masters/:type", renderMasters)
+  .on("/admin/product-machines", renderProductMachines)
   .on("/admin/dashboard", renderDashboard)
   .on("/admin/jobs", renderJobs)
   .on("/admin/jobs/:id", renderJobDetail)

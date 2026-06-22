@@ -25,7 +25,15 @@ let cache = emptyCache();
 const listeners = new Set();
 
 function emptyCache() {
-  return { machines: [], products: [], users: [], defectModes: [], jobs: [], session: { operatorId: null } };
+  return {
+    machines: [],
+    products: [],
+    users: [],
+    defectModes: [],
+    productMachines: [],
+    jobs: [],
+    session: { operatorId: null },
+  };
 }
 
 // ============================================================
@@ -319,6 +327,22 @@ export const defectModes = {
     if (d) updateIn("defectModes", id, { active: !d.active });
   },
   remove: (id) => removeFrom("defectModes", id),
+};
+
+// ============================================================
+// Product × Machine associations (品番×設備 対応マスタ)
+// Many-to-many: which products can run on which equipment.
+// ============================================================
+export const productMachines = {
+  list: () => cache.productMachines,
+  forMachine: (machineId) => cache.productMachines.filter((pm) => pm.machineId === machineId),
+  exists: (productId, machineId) =>
+    cache.productMachines.some((pm) => pm.productId === productId && pm.machineId === machineId),
+  add: ({ productId, machineId }) => {
+    if (productMachines.exists(productId, machineId)) return; // dedupe
+    addTo("productMachines", { id: uid("pm"), productId, machineId });
+  },
+  remove: (id) => removeFrom("productMachines", id),
 };
 
 // ============================================================

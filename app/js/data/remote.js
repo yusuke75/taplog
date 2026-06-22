@@ -24,6 +24,7 @@ const TABLE = {
   products: "products",
   users: "app_users",
   defectModes: "defect_modes",
+  productMachines: "product_machines",
   jobs: "jobs",
   events: "events",
 };
@@ -56,6 +57,7 @@ const FROM_DB = {
     active: r.active,
   }),
   defectModes: (r) => ({ id: r.id, name: r.name, order: r.sort_order, active: r.active }),
+  productMachines: (r) => ({ id: r.id, productId: r.product_id, machineId: r.machine_id }),
   jobs: (r) => ({
     id: r.id,
     machineId: r.machine_id,
@@ -108,6 +110,7 @@ const TO_DB = {
     active: u.active,
   }),
   defectModes: (d) => ({ id: d.id, name: d.name, sort_order: d.order ?? 0, active: d.active }),
+  productMachines: (pm) => ({ id: pm.id, product_id: pm.productId, machine_id: pm.machineId }),
   jobs: (j) => ({
     id: j.id,
     machine_id: j.machineId,
@@ -132,6 +135,9 @@ const TO_DB = {
 };
 
 const ORDER_BY = { machines: "sort_order", defectModes: "sort_order", jobs: "started_at" };
+// Tables that may not exist yet (added by a later migration). Missing →
+// load as empty instead of failing the whole app.
+const TOLERANT = new Set(["productMachines"]);
 
 /** Load all tables and assemble the cache shape (jobs carry their events). */
 export async function loadAll() {
@@ -140,7 +146,13 @@ export async function loadAll() {
       let q = supabase.from(TABLE[key]).select("*");
       if (ORDER_BY[key]) q = q.order(ORDER_BY[key]);
       const { data, error } = await q;
-      if (error) throw new Error(`${TABLE[key]} の読み込みに失敗: ${error.message}`);
+      if (error) {
+        if (TOLERANT.has(key)) {
+          console.warn(`TapLog: ${TABLE[key]} を読み込めませんでした（未作成の可能性）。空として扱います。`, error.message);
+          return [key, []];
+        }
+        throw new Error(`${TABLE[key]} の読み込みに失敗: ${error.message}`);
+      }
       return [key, data.map(FROM_DB[key])];
     })
   );
@@ -162,6 +174,7 @@ export async function loadAll() {
     products: byKey.products,
     users: byKey.users,
     defectModes: byKey.defectModes,
+    productMachines: byKey.productMachines,
     jobs: byKey.jobs,
   };
 }
