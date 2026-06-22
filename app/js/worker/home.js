@@ -1,5 +1,6 @@
-// Worker home (要件 §7): assigned machines as cards showing in-progress
-// jobs, plus a big "新規ジョブ開始" CTA. Cards update live (elapsed time).
+// Worker home (要件 §7): the operator's group equipment as cards showing
+// in-progress jobs. Tapping an idle card starts a new job; tapping an
+// active card opens recording. Cards update live (elapsed time).
 
 import { el, icon, mount } from "../lib/dom.js";
 import { machines, products, jobs, session } from "../data/store.js";
