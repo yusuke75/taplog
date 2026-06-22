@@ -16,7 +16,7 @@ export function renderHome() {
   clearViewTimers();
   if (!requireOperator()) return;
 
-  const { root, body } = workerShell({ title: "担当設備", homeLink: true });
+  const { root, body } = workerShell({ title: "設備一覧", homeLink: true });
 
   // updaters refresh each card's dynamic text/badge in place every second
   const updaters = [];
@@ -39,13 +39,6 @@ export function renderHome() {
   } else {
     list.forEach((m) => body.append(machineCard(m, updaters)));
   }
-
-  body.append(
-    el("button", { class: "worker-cta", onclick: () => Router.go("/worker/job/new") }, [
-      icon("add"),
-      "新規ジョブ開始",
-    ])
-  );
 
   mount(APP_ROOT(), root);
 
