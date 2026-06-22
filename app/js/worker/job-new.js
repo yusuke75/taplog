@@ -63,7 +63,7 @@ export function renderJobNew(params = {}) {
 
   const productSelect = selectField(
     "品番を選択",
-    products.active().map((p) => ({ value: p.id, label: `${p.code} ・ ${p.name}` })),
+    products.active().map((p) => ({ value: p.id, label: p.name })),
     state.productId,
     (v) => {
       state.productId = v;
