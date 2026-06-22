@@ -49,7 +49,7 @@ export function renderResult(params) {
 
   // master-driven defect rows
   const defectRows = defectModes.active().map((mode) => {
-    const input = el("input", { type: "number", inputmode: "numeric", min: "0", value: r.defects[mode.id] ?? 0 });
+    const input = el("input", { type: "number", inputmode: "numeric", min: "0", value: r.defects[mode.id] ?? "" });
     input.addEventListener("input", (e) => {
       r.defects[mode.id] = e.target.value;
       refreshTotal();

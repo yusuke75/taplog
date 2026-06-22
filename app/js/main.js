@@ -52,6 +52,9 @@ function scheduleRerender() {
 window.addEventListener("taplog:rerender", () => router.resolve());
 subscribe(scheduleRerender);
 
+// Reset scroll to top on navigation (not on in-place re-renders).
+window.addEventListener("hashchange", () => window.scrollTo(0, 0));
+
 // ---- boot ----
 showLoading();
 initStore()
